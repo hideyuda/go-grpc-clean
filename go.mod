@@ -1,4 +1,4 @@
-module github.com/hidenari-yuda/umerun-resume
+module github.com/hidenari-yuda/go-docker-template
 
 go 1.18
 

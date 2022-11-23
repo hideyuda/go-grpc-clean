@@ -1,6 +1,6 @@
 package usecase
 
-import "github.com/hidenari-yuda/umerun-resume/domain/entity"
+import "github.com/hidenari-yuda/go-docker-template/domain/entity"
 
 type UserRepository interface {
 	// Gest API

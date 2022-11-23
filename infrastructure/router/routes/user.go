@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hidenari-yuda/umerun-resume/domain/entity"
-	"github.com/hidenari-yuda/umerun-resume/infrastructure/database"
-	"github.com/hidenari-yuda/umerun-resume/infrastructure/di"
-	"github.com/hidenari-yuda/umerun-resume/usecase"
+	"github.com/hidenari-yuda/go-docker-template/domain/entity"
+	"github.com/hidenari-yuda/go-docker-template/infrastructure/database"
+	"github.com/hidenari-yuda/go-docker-template/infrastructure/di"
+	"github.com/hidenari-yuda/go-docker-template/usecase"
 	"github.com/labstack/echo/v4"
 )
 

@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hidenari-yuda/umerun-resume/domain/config"
-	"github.com/hidenari-yuda/umerun-resume/infrastructure/database"
-	"github.com/hidenari-yuda/umerun-resume/infrastructure/driver"
-	"github.com/hidenari-yuda/umerun-resume/infrastructure/router/routes"
+	"github.com/hidenari-yuda/go-docker-template/domain/config"
+	"github.com/hidenari-yuda/go-docker-template/infrastructure/database"
+	"github.com/hidenari-yuda/go-docker-template/infrastructure/driver"
+	"github.com/hidenari-yuda/go-docker-template/infrastructure/router/routes"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -61,12 +61,6 @@ func (r *Router) SetUp() *Router {
 	var origins = []string{
 		"http://localhost:9090",
 		"http://localhost:3000",
-		"http://localhost:3001",
-		"http://localhost:3002",
-		"https://dev-api.rechubsearch.jp",
-		"https://dy3pzh8nyoi4a.cloudfront.net", // cloudFront(dev)
-		"https://api.rechubsearch.jp",
-		"https://rechub-search-admin-front.vercel.app",
 	}
 
 	// if r.cfg.App.Env == "local" {
@@ -78,13 +72,9 @@ func (r *Router) SetUp() *Router {
 	// 	}
 	// } else if r.cfg.App.Env == "dev" {
 	// 	origins = []string{
-	// 		"https://dev-api.rechubsearch.jp",
-	// 		"https://dy3pzh8nyoi4a.cloudfront.net", // cloudFront(dev)
 	// 	}
 	// } else if r.cfg.App.Env == "prd" {
 	// 	origins = []string{
-	// 		"https://api.rechubsearch.jp",
-	// 		"https://rechub-search-admin-front.vercel.app",
 	// 	}
 	// }
 
@@ -152,8 +142,6 @@ func (r *Router) SetUp() *Router {
 
 		// ユーザーのログイン
 		noAuthAPI.PUT("/signin", userRoutes.SignIn(db, firebase))
-
-		noAuthAPI.POST("/detect/resume/job_seeker", userRoutes.DetectTextFromJobSeekerResume(db, firebase))
 
 	}
 

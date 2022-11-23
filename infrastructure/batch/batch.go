@@ -1,6 +1,6 @@
 package batch
 
-import "github.com/hidenari-yuda/umerun-resume/domain/config"
+import "github.com/hidenari-yuda/go-docker-template/domain/config"
 
 type Batch struct {
 	cfg config.Config

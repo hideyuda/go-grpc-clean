@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hidenari-yuda/umerun-resume/domain/entity"
-	"github.com/hidenari-yuda/umerun-resume/domain/utility"
-	"github.com/hidenari-yuda/umerun-resume/interfaces"
-	"github.com/hidenari-yuda/umerun-resume/usecase"
+	"github.com/hidenari-yuda/go-docker-template/domain/entity"
+	"github.com/hidenari-yuda/go-docker-template/domain/utility"
+	"github.com/hidenari-yuda/go-docker-template/interfaces"
+	"github.com/hidenari-yuda/go-docker-template/usecase"
 )
 
 type UserRepositoryImpl struct {

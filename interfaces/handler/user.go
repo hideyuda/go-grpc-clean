@@ -3,11 +3,11 @@ package handler
 import (
 	"fmt"
 
-	"github.com/hidenari-yuda/umerun-resume/domain/entity"
-	"github.com/hidenari-yuda/umerun-resume/domain/entity/responses"
-	"github.com/hidenari-yuda/umerun-resume/interfaces/presenter"
+	"github.com/hidenari-yuda/go-docker-template/domain/entity"
+	"github.com/hidenari-yuda/go-docker-template/domain/entity/responses"
+	"github.com/hidenari-yuda/go-docker-template/interfaces/presenter"
 
-	"github.com/hidenari-yuda/umerun-resume/usecase/interactor"
+	"github.com/hidenari-yuda/go-docker-template/usecase/interactor"
 )
 
 type UserHandler interface {

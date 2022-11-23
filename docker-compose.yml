@@ -1,13 +1,13 @@
 version: '3'
 networks:
-  umerun-resume-network:
+  go-docker-template-network:
     driver: bridge
 services:
   db:
     container_name: umerun_resume_local_db
-    image: mysql:8.0.20
+    image: mysql:8.0.30
     networks:
-      - umerun-resume-network
+      - go-docker-template-network
     ports:
       - 3306:3306
     volumes:
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile.local
     networks:
-      - umerun-resume-network
+      - go-docker-template-network
     volumes:
       - .:/go/src/app
     env_file:
@@ -29,8 +29,6 @@ services:
       APP_SERVICE: batch
       APP_BATCH_TYPE: butler
       DB_HOST: db
-    # volumes:
-    #   - ./go/src/github.com/Motoyui-inc/rechub-search-server
     depends_on:
       - db
     command: go run main.go

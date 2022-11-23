@@ -5,11 +5,11 @@ package di
 
 import (
 	"github.com/google/wire"
-	"github.com/hidenari-yuda/umerun-resume/interfaces"
-	"github.com/hidenari-yuda/umerun-resume/interfaces/handler"
-	"github.com/hidenari-yuda/umerun-resume/interfaces/repository"
-	"github.com/hidenari-yuda/umerun-resume/usecase"
-	"github.com/hidenari-yuda/umerun-resume/usecase/interactor"
+	"github.com/hidenari-yuda/go-docker-template/interfaces"
+	"github.com/hidenari-yuda/go-docker-template/interfaces/handler"
+	"github.com/hidenari-yuda/go-docker-template/interfaces/repository"
+	"github.com/hidenari-yuda/go-docker-template/usecase"
+	"github.com/hidenari-yuda/go-docker-template/usecase/interactor"
 )
 
 var wireSet = wire.NewSet(
