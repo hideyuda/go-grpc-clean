@@ -14,8 +14,6 @@ type UserHandler interface {
 	// Gest API
 	SignUp(param *entity.SignUpParam) (presenter.Presenter, error)
 	SignIn(param *entity.SignInParam) (presenter.Presenter, error)
-	GetByFirebaseToken(token string) (presenter.Presenter, error)
-	DetectTextFromJobSeekerResume(filePath string) (presenter.Presenter, error)
 }
 
 type UserHandlerImpl struct {
@@ -54,30 +52,5 @@ func (h *UserHandlerImpl) SignIn(param *entity.SignInParam) (presenter.Presenter
 	}
 
 	return presenter.NewUserJSONPresenter(responses.NewUser(output.User)), nil
-
-}
-
-func (h *UserHandlerImpl) GetByFirebaseToken(token string) (presenter.Presenter, error) {
-	output, err := h.UserInteractor.GetByFirebaseToken(interactor.GetByFirebaseTokenInput{
-		Token: token,
-	})
-
-	if err != nil {
-		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-		return nil, err
-	}
-
-	return presenter.NewUserJSONPresenter(responses.NewUser(output.User)), nil
-}
-
-func (h *UserHandlerImpl) DetectTextFromJobSeekerResume(filePath string) (presenter.Presenter, error) {
-	output, err := h.UserInteractor.DetectTextFromJobSeekerResume(interactor.DetectTextFromJobSeekerResumeInput{
-		FilePath: filePath,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return presenter.NewJobSeekerJSONPresenter(responses.NewJobSeeker(output.JobSeeker)), nil
 
 }
