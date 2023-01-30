@@ -3,11 +3,11 @@ package handler
 import (
 	"fmt"
 
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
-	"github.com/hidenari-yuda/go-docker-template/domain/entity/responses"
-	"github.com/hidenari-yuda/go-docker-template/interfaces/presenter"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/presenter"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
 
-	"github.com/hidenari-yuda/go-docker-template/usecase/interactor"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 )
 
 type UserHandler interface {

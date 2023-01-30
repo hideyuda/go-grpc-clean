@@ -21,3 +21,9 @@
 *bin/
 
 mock
+
+*.http
+
+request.http
+
+*.log

@@ -1,6 +1,6 @@
 package presenter
 
-import "github.com/hidenari-yuda/go-docker-template/domain/entity"
+import "github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 
 type ErrorJsonPresenter struct {
 	PresenterImpl

@@ -3,8 +3,8 @@ package interactor
 import (
 	"fmt"
 
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
-	"github.com/hidenari-yuda/go-docker-template/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
 type UserInteractor interface {

@@ -1,14 +1,14 @@
-package infrastructure
+package router
 
 import (
 	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/hidenari-yuda/go-docker-template/domain/config"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/database"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/driver"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/router/routes"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/router/routes"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

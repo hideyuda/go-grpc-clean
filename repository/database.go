@@ -1,4 +1,4 @@
-package interfaces
+package repository
 
 type SQLExecuter interface {
 	Get(name string, dest interface{}, query string, args ...interface{}) error

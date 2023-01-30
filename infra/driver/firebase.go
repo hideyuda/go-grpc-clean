@@ -12,9 +12,9 @@ import (
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"github.com/hidenari-yuda/go-docker-template/domain/config"
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
-	"github.com/hidenari-yuda/go-docker-template/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"github.com/pkg/errors"
 	"google.golang.org/api/option"
 )

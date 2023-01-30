@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/hidenari-yuda/go-docker-template/interfaces/presenter"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/presenter"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/go-playground/validator.v9"
 )

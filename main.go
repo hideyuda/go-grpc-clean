@@ -2,23 +2,33 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net"
 	"os"
+	"os/signal"
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/hidenari-yuda/go-docker-template/domain/config"
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
-	"github.com/hidenari-yuda/go-docker-template/domain/utility"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/batch"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/database"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/driver"
-	infrastructure "github.com/hidenari-yuda/go-docker-template/infrastructure/router"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
+	pb "github.com/hidenari-yuda/go-grpc-clean/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
-	"github.com/hidenari-yuda/go-docker-template/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/slack-go/slack"
+)
+
+// server is used to implement helloworld.GreeterServer.
+type server struct {
+	pb.UnimplementedSignServer
+}
+
+const (
+	port = 8080
 )
 
 func init() {
@@ -36,39 +46,75 @@ func init() {
 }
 
 func main() {
-	cfg, err := config.New()
+	// cfg, err := config.New()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// ctx := context.Background()
+
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(err)
 	}
 
-	switch cfg.App.Service {
-	case "api":
-		// 一旦 apiコンテナを立ち上げる時にマイグレーションする
-		db := database.NewDB(cfg.DB, true)
-		err := db.MigrateUp(".migrations")
-		if err != nil {
-			fmt.Println(err)
-		}
-		// cache := driver.NewRedisCacheImpl(cfg.Redis)
-		if cfg.App.Env == "local" {
-			firebase := driver.NewFirebaseImpl(cfg.Firebase)
-			fmt.Println("getTestUserToken:", uuid.New().String())
-			getTestUserToken(firebase, uuid.New().String())
-		}
-		r := infrastructure.NewRouter(cfg)
+	s := grpc.NewServer()
 
-		// // エラーハンドラー（dev or prdのみSlack通知）
-		if cfg.App.Env != "local" {
-			r.Engine.HTTPErrorHandler = customHTTPErrorHandler
-		}
+	// register(ctx, s)
 
-		// ルーティング
-		r.SetUp().Start()
+	// https://zenn.dev/hsaki/books/golang-grpc-starting/viewer/server#%5B%E3%82%B3%E3%83%A9%E3%83%A0%5D%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AA%E3%83%95%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%81%AF%EF%BC%9F
+	reflection.Register(s)
 
-	case "batch":
-		batch.NewBatch(cfg).Start()
-	}
+	go func() {
+		pb.RegisterSignServer(s, &server{})
+		fmt.Printf("start gRPC server, port: %d", port)
+		s.Serve(listener)
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	log.Println("stopping gRPC server...")
+	s.GracefulStop()
 }
+
+// 	switch cfg.App.Service {
+// 	case "api":
+// 		// 一旦 apiコンテナを立ち上げる時にマイグレーションする
+// 		db := database.NewDB(cfg.DB, true)
+// 		err := db.MigrateUp(".migrations")
+// 		if err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		// cache := driver.NewRedisCacheImpl(cfg.Redis)
+// 		if cfg.App.Env == "local" {
+// 			firebase := driver.NewFirebaseImpl(cfg.Firebase)
+// 			fmt.Println("getTestUserToken:", uuid.New().String())
+// 			getTestUserToken(firebase, uuid.New().String())
+// 		}
+// 		r := router.NewRouter(cfg)
+
+// 		// // エラーハンドラー（dev or prdのみSlack通知）
+// 		if cfg.App.Env != "local" {
+// 			r.Engine.HTTPErrorHandler = customHTTPErrorHandler
+// 		}
+
+// 		// ルーティング
+// 		r.SetUp().Start()
+
+// 	case "batch":
+// 		batch.NewBatch(cfg).Start()
+// 	}
+// }
+
+// func register(ctx context.Context, s *grpc.Server) {
+// 	// c := infra.NewFirestoreClient(ctx)
+// 	// repo := infra.NewMessageRepositoryImpl(c)
+// 	repo := infra.NewLocalMessageRepositoryImpl()
+// 	createMessageService := usecase.NewCreateMessageService(repo)
+// 	getMessageService := usecase.NewGetMessageStreamService(repo)
+// 	pb.RegisterChatServiceServer(s, NewServer(*createMessageService, *getMessageService))
+// }
 
 func getTestUserToken(fb usecase.Firebase, uuid string) {
 	customToken, _ := fb.GetCustomToken(uuid)

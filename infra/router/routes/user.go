@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/database"
-	"github.com/hidenari-yuda/go-docker-template/infrastructure/di"
-	"github.com/hidenari-yuda/go-docker-template/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"github.com/labstack/echo/v4"
 )
 
-type UserRouteFunc interface {
-	SignUp(db *database.DB, firebase usecase.Firebase) func(c echo.Context) error
-	SignIn(db *database.DB, firebase usecase.Firebase) func(c echo.Context) error
+type UserRoutes struct {
+	Name string
 }
 
-type UserRoutes struct {
-	UserRouteFunc
+func NewUserRoutes() UserRouteFunc {
+	return &UserRoutes{
+		Name: "UserRoutes",
+	}
 }
 
 func (r *UserRoutes) SignUp(db *database.DB, firebase usecase.Firebase) func(c echo.Context) error {

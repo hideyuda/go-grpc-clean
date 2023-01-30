@@ -3,7 +3,7 @@ package utility
 import (
 	"crypto/subtle"
 
-	"github.com/hidenari-yuda/go-docker-template/domain/config"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/labstack/echo/v4"
 )
 

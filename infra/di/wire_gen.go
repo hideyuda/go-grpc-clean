@@ -8,18 +8,17 @@ package di
 
 import (
 	"github.com/google/wire"
-	"github.com/hidenari-yuda/go-docker-template/interfaces"
-	"github.com/hidenari-yuda/go-docker-template/interfaces/handler"
-	"github.com/hidenari-yuda/go-docker-template/interfaces/repository"
-	"github.com/hidenari-yuda/go-docker-template/usecase"
-	"github.com/hidenari-yuda/go-docker-template/usecase/interactor"
+	"github.com/hidenari-yuda/go-grpc-clean/handler"
+	"github.com/hidenari-yuda/go-grpc-clean/repository"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 )
 
 // Injectors from wire.go:
 
 // User
 //
-func InitializeUserHandler(db interfaces.SQLExecuter, fb usecase.Firebase) handler.UserHandler {
+func InitializeUserHandler(db repository.SQLExecuter, fb usecase.Firebase) handler.UserHandler {
 	userRepository := repository.NewUserRepositoryImpl(db)
 	userInteractor := interactor.NewUserInteractorImpl(fb, userRepository)
 	userHandler := handler.NewUserHandlerImpl(userInteractor)
@@ -28,7 +27,7 @@ func InitializeUserHandler(db interfaces.SQLExecuter, fb usecase.Firebase) handl
 
 // User
 //
-func InitializeUserInteractor(db interfaces.SQLExecuter, fb usecase.Firebase) interactor.UserInteractor {
+func InitializeUserInteractor(db repository.SQLExecuter, fb usecase.Firebase) interactor.UserInteractor {
 	userRepository := repository.NewUserRepositoryImpl(db)
 	userInteractor := interactor.NewUserInteractorImpl(fb, userRepository)
 	return userInteractor

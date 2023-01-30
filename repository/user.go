@@ -4,18 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
-	"github.com/hidenari-yuda/go-docker-template/domain/utility"
-	"github.com/hidenari-yuda/go-docker-template/interfaces"
-	"github.com/hidenari-yuda/go-docker-template/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
 type UserRepositoryImpl struct {
 	Name     string
-	executer interfaces.SQLExecuter
+	executer SQLExecuter
 }
 
-func NewUserRepositoryImpl(ex interfaces.SQLExecuter) usecase.UserRepository {
+func NewUserRepositoryImpl(ex SQLExecuter) usecase.UserRepository {
 	return &UserRepositoryImpl{
 		Name:     "UserRepository",
 		executer: ex,
