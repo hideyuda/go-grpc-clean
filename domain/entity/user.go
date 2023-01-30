@@ -9,6 +9,7 @@ type User struct {
 	Name       string    `db:"name" json:"name"`
 	Email      string    `db:"email" json:"email"`
 	Password   string    `db:"password" json:"password"`
+	UserType   uint      `db:"user_type" json:"user_type"`
 	CreatedAt  string    `db:"created_at" json:"created_at"`
 	UpdatedAt  string    `db:"updated_at" json:"updated_at"`
 }
