@@ -12,7 +12,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
-	pb "github.com/hidenari-yuda/go-grpc-clean/proto"
+	pb "github.com/hidenari-yuda/go-grpc-clean/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
