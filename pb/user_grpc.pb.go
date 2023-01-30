@@ -25,7 +25,7 @@ type UserServiceClient interface {
 	// ユーザー情報を取得する
 	GetUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	// 新規のユーザー情報を追加する
-	AddUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error)
+	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error)
 	// 与えられたユーザーのうち存在する人数を取得する
 	// rpc CountAlreadyUsers (stream UserRequest) returns (UserCntResponse) {}
 	// 与えられたユーザータイプと同種のユーザーを取得する
@@ -53,9 +53,9 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *UserRequest, opts .
 	return out, nil
 }
 
-func (c *userServiceClient) AddUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *userServiceClient) CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/AddUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ type UserServiceServer interface {
 	// ユーザー情報を取得する
 	GetUser(context.Context, *UserRequest) (*UserResponse, error)
 	// 新規のユーザー情報を追加する
-	AddUser(context.Context, *User) (*UserResponse, error)
+	CreateUser(context.Context, *User) (*UserResponse, error)
 	// 与えられたユーザーのうち存在する人数を取得する
 	// rpc CountAlreadyUsers (stream UserRequest) returns (UserCntResponse) {}
 	// 与えられたユーザータイプと同種のユーザーを取得する
@@ -138,8 +138,8 @@ type UnimplementedUserServiceServer struct {
 func (UnimplementedUserServiceServer) GetUser(context.Context, *UserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) AddUser(context.Context, *User) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddUser not implemented")
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *User) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserServiceServer) GetUsersByType(*UserTypeRequest, UserService_GetUsersByTypeServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetUsersByType not implemented")
@@ -181,20 +181,20 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_AddUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(User)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).AddUser(ctx, in)
+		return srv.(UserServiceServer).CreateUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/AddUser",
+		FullMethod: "/user.UserService/CreateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).AddUser(ctx, req.(*User))
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*User))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -268,8 +268,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUser_Handler,
 		},
 		{
-			MethodName: "AddUser",
-			Handler:    _UserService_AddUser_Handler,
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
 		},
 		{
 			MethodName: "SignIn",

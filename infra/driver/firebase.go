@@ -27,7 +27,7 @@ type FirebaseImpl struct {
 
 func NewFirebaseImpl(fbConfig config.Firebase) usecase.Firebase {
 	ctx := context.Background()
-	opts := option.WithCredentialsFile(fbConfig.JSONFilePath)
+	opts := option.WithCredentialsFile(fbConfig.JsonFilePath)
 
 	app, err := firebase.NewApp(ctx, nil, opts)
 	if err != nil {
@@ -47,7 +47,7 @@ func NewFirebaseImpl(fbConfig config.Firebase) usecase.Firebase {
 	return &FirebaseImpl{
 		auth:      auth,
 		firestore: firestore,
-		webAPIKey: fbConfig.WebAPIKey,
+		webAPIKey: fbConfig.WebApiKey,
 	}
 }
 

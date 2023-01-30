@@ -1,4 +1,4 @@
-package routes
+package router
 
 import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/presenter"

@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/hidenari-yuda/go-docker-template/domain/config"
-	"github.com/hidenari-yuda/go-docker-template/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 	"gopkg.in/guregu/null.v4"
@@ -25,7 +25,7 @@ type DB struct {
 	printsQuery bool
 }
 
-func NewDB(dbConfig config.DB, printsQuery bool) *DB {
+func NewDB(dbConfig config.Db, printsQuery bool) *DB {
 	var (
 		db            *sqlx.DB
 		err           error
