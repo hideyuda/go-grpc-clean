@@ -22,18 +22,16 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// ユーザー情報を取得する
-	GetUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	// 新規のユーザー情報を追加する
 	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error)
+	// ユーザー情報を取得する
+	GetUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	// 与えられたユーザーのうち存在する人数を取得する
 	// rpc CountAlreadyUsers (stream UserRequest) returns (UserCntResponse) {}
 	// 与えられたユーザータイプと同種のユーザーを取得する
 	GetUsersByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (UserService_GetUsersByTypeClient, error)
 	// SignIn
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	// SignUp
-	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
 type userServiceClient struct {
@@ -44,18 +42,18 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) GetUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *userServiceClient) CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/GetUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *userServiceClient) GetUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/CreateUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,31 +101,20 @@ func (c *userServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts 
 	return out, nil
 }
 
-func (c *userServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/SignUp", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// ユーザー情報を取得する
-	GetUser(context.Context, *UserRequest) (*UserResponse, error)
 	// 新規のユーザー情報を追加する
 	CreateUser(context.Context, *User) (*UserResponse, error)
+	// ユーザー情報を取得する
+	GetUser(context.Context, *UserRequest) (*UserResponse, error)
 	// 与えられたユーザーのうち存在する人数を取得する
 	// rpc CountAlreadyUsers (stream UserRequest) returns (UserCntResponse) {}
 	// 与えられたユーザータイプと同種のユーザーを取得する
 	GetUsersByType(*UserTypeRequest, UserService_GetUsersByTypeServer) error
 	// SignIn
 	SignIn(context.Context, *SignInRequest) (*UserResponse, error)
-	// SignUp
-	SignUp(context.Context, *SignUpRequest) (*UserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -135,20 +122,17 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) GetUser(context.Context, *UserRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
-}
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *User) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserServiceServer) GetUser(context.Context, *UserRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedUserServiceServer) GetUsersByType(*UserTypeRequest, UserService_GetUsersByTypeServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetUsersByType not implemented")
 }
 func (UnimplementedUserServiceServer) SignIn(context.Context, *SignInRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
-}
-func (UnimplementedUserServiceServer) SignUp(context.Context, *SignUpRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -161,24 +145,6 @@ type UnsafeUserServiceServer interface {
 
 func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
-}
-
-func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).GetUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user.UserService/GetUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUser(ctx, req.(*UserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -195,6 +161,24 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).CreateUser(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUser(ctx, req.(*UserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -238,24 +222,6 @@ func _UserService_SignIn_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignUpRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).SignUp(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user.UserService/SignUp",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).SignUp(ctx, req.(*SignUpRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -264,20 +230,16 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetUser",
-			Handler:    _UserService_GetUser_Handler,
-		},
-		{
 			MethodName: "CreateUser",
 			Handler:    _UserService_CreateUser_Handler,
 		},
 		{
-			MethodName: "SignIn",
-			Handler:    _UserService_SignIn_Handler,
+			MethodName: "GetUser",
+			Handler:    _UserService_GetUser_Handler,
 		},
 		{
-			MethodName: "SignUp",
-			Handler:    _UserService_SignUp_Handler,
+			MethodName: "SignIn",
+			Handler:    _UserService_SignIn_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
