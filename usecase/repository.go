@@ -20,3 +20,44 @@ type UserRepository interface {
 	// admin
 	GetAll() ([]*entity.User, error)
 }
+
+type ChatGroupRepository interface {
+	// Gest API
+	// Create
+	Create(param *entity.ChatGroup) error
+
+	// Update
+	Update(param *entity.ChatGroup) error
+
+	// Delete
+	Delete(id uint) error
+
+	// Get
+	GetById(id uint) (*entity.ChatGroup, error)
+}
+
+type ChatUserRepository interface {
+	// Gest API
+	// Create
+	Create(param *entity.ChatUser) error
+
+	// Delete
+	Delete(id uint) error
+
+	// Get
+	GetById(id uint) (*entity.ChatUser, error)
+	GetListByGroupId(groupId uint) ([]*entity.ChatUser, error)
+}
+
+type ChatRepository interface {
+	// Gest API
+	// Create
+	Create(param *entity.Chat) error
+
+	// Delete
+	Delete(id uint) error
+
+	// Get
+	GetById(id uint) (*entity.Chat, error)
+	GetListByGroupId(groupId uint) ([]*entity.Chat, error)
+}

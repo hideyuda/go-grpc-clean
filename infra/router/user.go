@@ -88,7 +88,7 @@ func (s *Server) GetMessageStream(req *emptypb.Empty, server pb.ChatService_GetM
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	stream := make(chan entity.Message)
+	stream := make(chan entity.Chat)
 
 	go func() {
 		defer close(stream)

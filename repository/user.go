@@ -23,6 +23,8 @@ func NewUserRepositoryImpl(ex SQLExecuter) usecase.UserRepository {
 
 /***** Create *****/
 func (r *UserRepositoryImpl) Create(param *entity.User) error {
+	now := time.Now()
+
 	_, err := r.executer.Exec(
 		r.Name+"SignUp",
 		`INSERT INTO users (
@@ -50,8 +52,8 @@ func (r *UserRepositoryImpl) Create(param *entity.User) error {
 		param.Email,
 		param.Password,
 		param.UserType,
-		time.Now(),
-		time.Now(),
+		now,
+		now,
 	)
 
 	if err != nil {

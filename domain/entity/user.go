@@ -18,8 +18,18 @@ type User struct {
 	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
 }
 
-func NewUser() *User {
-	return &User{}
+func NewUser(
+	name string,
+	email string,
+	password string,
+	userType uint,
+) *User {
+	return &User{
+		Name:     name,
+		Email:    email,
+		Password: password,
+		UserType: userType,
+	}
 }
 
 type SignUpParam struct {

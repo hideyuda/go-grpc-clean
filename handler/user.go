@@ -26,15 +26,13 @@ func NewUserHandlerImpl(ui interactor.UserInteractor) UserHandler {
 }
 
 func (h *UserHandlerImpl) Create(param *entity.User) (presenter.Presenter, error) {
-	output, err := h.UserInteractor.Create(interactor.CreateInput{
-		Param: param,
-	})
+	output, err := h.UserInteractor.Create(param)
 	if err != nil {
 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
 		return nil, err
 	}
 
-	return presenter.NewUserJSONPresenter(responses.NewUser(output.User)), nil
+	return presenter.NewUserJSONPresenter(responses.NewUser(output)), nil
 }
 
 // func (h *UserHandlerImpl) SignUp(param *entity.SignUpParam) (presenter.Presenter, error) {
@@ -54,14 +52,12 @@ func (h *UserHandlerImpl) Create(param *entity.User) (presenter.Presenter, error
 // }
 
 func (h *UserHandlerImpl) SignIn(param *entity.SignInParam) (presenter.Presenter, error) {
-	output, err := h.UserInteractor.SignIn(interactor.SignInInput{
-		Param: param,
-	})
+	output, err := h.UserInteractor.SignIn(param)
 	if err != nil {
 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
 		return nil, err
 	}
 
-	return presenter.NewUserJSONPresenter(responses.NewUser(output.User)), nil
+	return presenter.NewUserJSONPresenter(responses.NewUser(output)), nil
 
 }
