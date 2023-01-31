@@ -25,12 +25,33 @@ func InitializeUserHandler(db repository.SQLExecuter, fb usecase.Firebase) handl
 	return userHandler
 }
 
+// Chat
+//
+func InitializeChatHandler(db repository.SQLExecuter, fb usecase.Firebase) handler.ChatHandler {
+	chatRepository := repository.NewChatRepositoryImpl(db)
+	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
+	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
+	chatInteractor := interactor.NewChatInteractorImpl(fb, chatRepository, chatGroupRepository, chatUserRepository)
+	chatHandler := handler.NewChatHandlerImpl(chatInteractor)
+	return chatHandler
+}
+
 // User
 //
 func InitializeUserInteractor(db repository.SQLExecuter, fb usecase.Firebase) interactor.UserInteractor {
 	userRepository := repository.NewUserRepositoryImpl(db)
 	userInteractor := interactor.NewUserInteractorImpl(fb, userRepository)
 	return userInteractor
+}
+
+// Chat
+//
+func InitializeChatInteractor(db repository.SQLExecuter, fb usecase.Firebase) interactor.ChatInteractor {
+	chatRepository := repository.NewChatRepositoryImpl(db)
+	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
+	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
+	chatInteractor := interactor.NewChatInteractorImpl(fb, chatRepository, chatGroupRepository, chatUserRepository)
+	return chatInteractor
 }
 
 // wire.go:

@@ -45,7 +45,7 @@ func main() {
 	switch cfg.App.Service {
 	case "api":
 		// 一旦 apiコンテナを立ち上げる時にマイグレーションする
-		db := database.NewDB(cfg.DB, true)
+		db := database.NewDB(cfg.Db, true)
 		err := db.MigrateUp(".migrations")
 		if err != nil {
 			fmt.Println(err)

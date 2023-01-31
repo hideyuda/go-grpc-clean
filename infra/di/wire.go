@@ -28,6 +28,13 @@ func InitializeUserHandler(db repository.SQLExecuter, fb usecase.Firebase) (h ha
 	return
 }
 
+// Chat
+//
+func InitializeChatHandler(db repository.SQLExecuter, fb usecase.Firebase) (h handler.ChatHandler) {
+	wire.Build(wireSet)
+	return
+}
+
 /**
 	Interactor
 **/
@@ -35,6 +42,13 @@ func InitializeUserHandler(db repository.SQLExecuter, fb usecase.Firebase) (h ha
 // User
 //
 func InitializeUserInteractor(db repository.SQLExecuter, fb usecase.Firebase) (i interactor.UserInteractor) {
+	wire.Build(wireSet)
+	return
+}
+
+// Chat
+//
+func InitializeChatInteractor(db repository.SQLExecuter, fb usecase.Firebase) (i interactor.ChatInteractor) {
 	wire.Build(wireSet)
 	return
 }

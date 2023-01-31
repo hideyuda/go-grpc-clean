@@ -34,7 +34,7 @@ func NewRouter(cfg config.Config) *Router {
 
 func (r *Router) SetUp() *Router {
 	// var (
-	// db       = database.NewDB(r.cfg.DB, true)
+	// db       = database.NewDB(r.cfg.Db, true)
 	// firebase = driver.NewFirebaseImpl(r.cfg.Firebase)
 	// basicAuth = utility.NewBasicAuth(r.cfg)
 	// )
