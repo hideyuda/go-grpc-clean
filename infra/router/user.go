@@ -34,8 +34,10 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse
 	// 	return nil, err
 	// }
 
-	input := &entity.SignUpParam{
-		Email: req.Email,
+	input := &entity.User{
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
 	}
 
 	// input := entity.User{
@@ -46,7 +48,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse
 
 	tx, _ := db.Begin()
 	h := di.InitializeUserHandler(tx, firebase)
-	presenter, err := h.SignUp(input)
+	presenter, err := h.Create(input)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
