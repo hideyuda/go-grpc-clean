@@ -42,7 +42,7 @@ func main() {
 		panic(err)
 	}
 	utility.LoggingSettings(config.App.LogFilePath)
-	log.Println(fmt.Sprint("Server is running on port: ", config.App.Port, "time is ", time.Now()))
+	log.Println(fmt.Sprint("Server is running on port: ", config.App.Port))
 
 	// ctx := context.Background()
 

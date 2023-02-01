@@ -26,6 +26,7 @@ func New() (Config, error) {
 		Port:           c.App.Port,
 		BasicUsers:     c.App.BasicUsers,
 		BasicPasswords: c.App.BasicPasswords,
+		BasicSecret:    c.App.BasicSecret,
 		CorsDomains:    c.App.CorsDomains,
 		LogFilePath:    c.App.LogFilePath,
 	}
@@ -86,6 +87,7 @@ type AppObj struct {
 	Port           int      `required:"true" split_words:"true"`
 	BasicUsers     []string `required:"true" split_words:"true"`
 	BasicPasswords []string `required:"true" split_words:"true"`
+	BasicSecret    string   `required:"true" split_words:"true"`
 	CorsDomains    []string `required:"true" split_words:"true"`
 	LogFilePath    string   `required:"true" split_words:"true"`
 }
