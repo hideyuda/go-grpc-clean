@@ -13,7 +13,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
-func (s *Server) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
+func (s *ServiceServer) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
 
 	// Convert context.Context to echo.Context in gRPC server
 
@@ -48,7 +48,7 @@ func (s *Server) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatResponse
 	}, nil
 }
 
-func (s *Server) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.ChatResponse, error) {
+func (s *ServiceServer) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.ChatResponse, error) {
 	fmt.Println("Get")
 
 	var (
@@ -75,7 +75,7 @@ func (s *Server) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.ChatResp
 	}, nil
 }
 
-func (s *Server) GetChatStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer) error {
+func (s *ServiceServer) GetChatStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer) error {
 	var (
 		firebase = driver.NewFirebaseImpl()
 	)

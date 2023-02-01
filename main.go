@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -21,6 +22,7 @@ import (
 )
 
 func init() {
+
 	time.Local = utility.Tokyo
 
 	if err := godotenv.Load(); err != nil {
@@ -39,6 +41,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	utility.LoggingSettings(config.App.LogFilePath)
+	log.Println(fmt.Sprint("Server is running on port: ", config.App.Port, "time is ", time.Now()))
 
 	// ctx := context.Background()
 

@@ -8,6 +8,8 @@ import (
 	"os/signal"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
@@ -15,9 +17,11 @@ import (
 )
 
 // server is used to implement helloworld.GreeterServer.
-type Server struct {
+type ServiceServer struct {
 	pb.UnimplementedUserServiceServer
 	pb.UnimplementedChatServiceServer
+	Db       *database.Db
+	Firebase *driver.FirebaseImpl
 }
 
 type Router struct {
@@ -33,6 +37,33 @@ func NewRouter(cfg config.Config) *Router {
 }
 
 func (r *Router) SetUp() *Router {
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.App.Port))
+	if err != nil {
+		panic(err)
+	}
+
+	s := grpc.NewServer()
+
+	// register(ctx, s)
+
+	// https://zenn.dev/hsaki/books/golang-grpc-starting/viewer/server#%5B%E3%82%B3%E3%83%A9%E3%83%A0%5D%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AA%E3%83%95%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%81%AF%EF%BC%9F
+	reflection.Register(s)
+	pb.RegisterUserServiceServer(s, &ServiceServer{})
+	pb.RegisterChatServiceServer(s, &ServiceServer{})
+
+	go func() {
+		fmt.Printf("start gRPC server, port: %d", config.App.Port)
+		s.Serve(listener)
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	log.Println("stopping gRPC server...")
+	s.GracefulStop()
+
+	return r
+
 	// var (
 	// db       = database.NewDB(r.cfg.Db, true)
 	// firebase = driver.NewFirebaseImpl(r.cfg.Firebase)
@@ -108,33 +139,6 @@ func (r *Router) SetUp() *Router {
 	// 	},
 	// }))
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.AppPort))
-	if err != nil {
-		panic(err)
-	}
-
-	s := grpc.NewServer()
-
-	// register(ctx, s)
-
-	// https://zenn.dev/hsaki/books/golang-grpc-starting/viewer/server#%5B%E3%82%B3%E3%83%A9%E3%83%A0%5D%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AA%E3%83%95%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%81%AF%EF%BC%9F
-	reflection.Register(s)
-	pb.RegisterUserServiceServer(s, &Server{})
-	pb.RegisterChatServiceServer(s, &Server{})
-
-	go func() {
-		fmt.Printf("start gRPC server, port: %d", config.AppPort)
-		s.Serve(listener)
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-	log.Println("stopping gRPC server...")
-	s.GracefulStop()
-
-	return r
-
 	// api := r.Engine.Group("")
 	// {
 	// 	api.GET("/healthz", func(c echo.Context) error {
@@ -183,5 +187,5 @@ func (r *Router) SetUp() *Router {
 }
 
 func (r *Router) Start() {
-	r.Engine.Start(fmt.Sprintf(":%d", config.AppPort))
+	r.Engine.Start(fmt.Sprintf(":%d", config.App.Port))
 }

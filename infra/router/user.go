@@ -13,7 +13,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
-func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse, error) {
+func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse, error) {
 
 	// Convert context.Context to echo.Context in gRPC server
 
@@ -52,7 +52,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse
 	}, nil
 }
 
-func (s *Server) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
+func (s *ServiceServer) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 	fmt.Println("Get")
 
 	var (

@@ -35,23 +35,23 @@ func NewDb() *Db {
 	)
 
 	// 本番環境の場合は、CloudSQLにUnix接続する
-	if config.DbInstanceUnixSocket != "" {
+	if config.Db.InstanceUnixSocket != "" {
 		url = fmt.Sprintf("%s:%s@unix(/%s)/%s?parseTime=true&charset=utf8mb4&collation=utf8mb4_general_ci",
-			config.DbUser,
-			config.DbPass,
-			config.DbInstanceUnixSocket,
-			config.DbName,
+			config.Db.User,
+			config.Db.Pass,
+			config.Db.InstanceUnixSocket,
+			config.Db.Name,
 		)
 
 		// ローカル環境の場合は、DockerのMySQLへTCP接続する
 	} else {
 
 		url = fmt.Sprintf("%s:%s@tcp([%s]:%d)/%s?charset=utf8mb4&collation=utf8mb4_general_ci&parseTime=true",
-			config.DbUser,
-			config.DbPass,
-			config.DbHost,
-			config.DbPort,
-			config.DbName,
+			config.Db.User,
+			config.Db.Pass,
+			config.Db.Host,
+			config.Db.Port,
+			config.Db.Name,
 		)
 	}
 
