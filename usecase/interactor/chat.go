@@ -1,10 +1,12 @@
 package interactor
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+	"golang.org/x/sync/errgroup"
 )
 
 type ChatInteractor interface {
@@ -17,7 +19,7 @@ type ChatInteractor interface {
 
 	// Get
 	GetById(id uint) (*entity.Chat, error)
-	GetStream(groupId uint) ([]*entity.Chat, error)
+	GetStream(ctx context.Context, stream chan<- entity.Chat) error
 }
 
 type ChatInteractorImpl struct {
@@ -88,20 +90,18 @@ func (i *ChatInteractorImpl) GetById(id uint) (*entity.Chat, error) {
 	return chat, nil
 }
 
-func (i *ChatInteractorImpl) GetStream(groupId uint) ([]*entity.Chat, error) {
-	var (
-		chats []*entity.Chat
-		// err   error
-	)
-
-	// i.firebase.GetChatStream(groupId, chats)
-
-	// ユーザー登録
-	// chats, err = i.chatRepository.GetListByGroupId(groupId)
-	// if err != nil {
-	// 	fmt.Println("error is:", err)
-	// 	return chats, err
-	// }
-
-	return chats, nil
+func (i *ChatInteractorImpl) GetStream(ctx context.Context, stream chan<- entity.Chat) error {
+	defer close(stream)
+	eg, _ := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		err := i.firebase.GetChatStream(ctx, stream)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err := eg.Wait(); err != nil {
+		return fmt.Errorf("failed to GetMessageStreamService.Handle: %s", err)
+	}
+	return nil
 }

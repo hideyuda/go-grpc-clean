@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/presenter"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
@@ -15,7 +17,7 @@ type ChatHandler interface {
 
 	// Get
 	GetById(id uint) (presenter.Presenter, error)
-	GetStream(groupId uint) (presenter.Presenter, error)
+	GetStream(ctx context.Context, stream chan<- entity.Chat) error
 }
 
 type ChatHandlerImpl struct {
@@ -59,12 +61,11 @@ func (h *ChatHandlerImpl) GetById(id uint) (presenter.Presenter, error) {
 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
 }
 
-func (h *ChatHandlerImpl) GetStream(groupId uint) (presenter.Presenter, error) {
-	output, err := h.ChatInteractor.GetStream(groupId)
+func (h *ChatHandlerImpl) GetStream(ctx context.Context, stream chan<- entity.Chat) error {
+	err := h.ChatInteractor.GetStream(ctx, stream)
 	if err != nil {
-		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-		return nil, err
+		return err
 	}
 
-	return presenter.NewChatListJSONPresenter(responses.NewChatList(output)), nil
+	return nil
 }

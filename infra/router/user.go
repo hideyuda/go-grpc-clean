@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
@@ -23,35 +24,32 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse
 		firebase = driver.NewFirebaseImpl()
 	)
 
-	// err := bindAndValidate(c, req)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	input := &entity.User{
-		Name:     req.Name,
-		Email:    req.Email,
-		Password: req.Password,
+		Name:      req.Name,
+		Email:     req.Email,
+		Password:  req.Password,
+		CreatedAt: req.CreatedAt.AsTime(),
 	}
 
-	// input := entity.User{
-	// 	Id:        uint(req.Id),
-	// 	Email:     req.Email,
-	// 	CreatedAt: req.CreatedAt.AsTime(),
-	// }
-
 	tx, _ := db.Begin()
-	h := di.InitializeUserHandler(tx, firebase)
-	presenter, err := h.Create(input)
+	i := di.InitializeUserInteractor(tx, firebase)
+	res, err := i.Create(input)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 	tx.Commit()
-	fmt.Println(h)
-	fmt.Println(presenter)
 
-	return &pb.UserResponse{}, nil
+	return &pb.UserResponse{
+		Error: false,
+		User: &pb.User{
+			Id:        uint32(res.Id),
+			Name:      res.Name,
+			Email:     res.Email,
+			Password:  res.Password,
+			CreatedAt: timestamppb.New(res.CreatedAt),
+		},
+	}, nil
 }
 
 func (s *Server) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
@@ -63,54 +61,22 @@ func (s *Server) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResp
 	)
 
 	tx, _ := db.Begin()
-	h := di.InitializeUserHandler(tx, firebase)
-	presenter, err := h.GetById(uint(req.Id))
+	i := di.InitializeUserInteractor(tx, firebase)
+	res, err := i.GetById(uint(req.Id))
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 	tx.Commit()
-	fmt.Println(h)
-	fmt.Println(presenter)
 
-	return &pb.UserResponse{}, nil
+	return &pb.UserResponse{
+		Error: false,
+		User: &pb.User{
+			Id:        uint32(res.Id),
+			Name:      res.Name,
+			Email:     res.Email,
+			Password:  res.Password,
+			CreatedAt: timestamppb.New(res.CreatedAt),
+		},
+	}, nil
 }
-
-// func (s *Server) GetMessageStream(req *emptypb.Empty, server pb.ChatService_GetMessageStreamServer) error {
-// 	ctx, cancel := context.WithCancel(context.Background())
-// 	defer cancel()
-
-// 	stream := make(chan entity.Chat)
-
-// 	go func() {
-// 		defer close(stream)
-// 		eg, _ := errgroup.WithContext(ctx)
-// 		eg.Go(func() error {
-// 			// if err := g.messageRepository.Listen(ctx, stream); err != nil {
-// 			// 	return err
-// 			// }
-// 			return nil
-// 		})
-// 		// if err := eg.Wait(); err != nil {
-// 		// 	return fmt.Errorf("failed to GetMessageStreamService.Handle: %s", err)
-// 		// }
-// 		// return nil
-// 		// if err := s.GetMessageStreamService.Handle(ctx, stream); err != nil {
-// 		// 	log.Println(err)
-// 		// }
-// 	}()
-
-// 	for {
-// 		v := <-stream
-// 		createdAt := timestamppb.New(v.CreatedAt)
-// 		if err := server.Send(&pb.GetMessageStreamResponse{
-// 			Message: &pb.Message{
-// 				From:      v.From,
-// 				Content:   v.Content,
-// 				CreatedAt: createdAt,
-// 			},
-// 		}); err != nil {
-// 			return err
-// 		}
-// 	}
-// }
