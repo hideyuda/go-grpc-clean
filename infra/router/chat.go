@@ -3,7 +3,6 @@ package router
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"golang.org/x/sync/errgroup"
@@ -125,40 +124,6 @@ func (s *Server) GetChatStream(req *pb.GetStreamRequest, server pb.ChatService_G
 			},
 		}); err != nil {
 			return err
-		}
-	}
-}
-
-// Listen はMessageコレクションのリアルタイムアップデートを確認する処理です
-//  https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots
-func Listen(ctx context.Context, stream chan<- entity.Chat) error {
-	message := entity.Chat{}
-	firestore, err := driver.NewFirebaseImpl(config.Firebase{}).GetFirestore()
-
-	snapIter := firestore.Collection("chat").Snapshots(ctx)
-	defer snapIter.Stop()
-
-	for {
-		snap, err := snapIter.Next()
-		if err != nil {
-			return fmt.Errorf("failed to MessageRepositoryImpl.Listen, snapIter.Next: %s", err)
-		}
-		log.Printf("change size: %d\n", len(snap.Changes))
-		for _, diff := range snap.Changes {
-			switch diff.Kind {
-			case firestore.DocumentAdded:
-				if err := diff.Doc.DataTo(&message); err != nil {
-					return fmt.Errorf("failed to MessageRepositoryImpl.Listen: %s", err)
-				}
-			}
-			message.Id = diff.Doc.Ref.ID
-
-			select {
-			case <-ctx.Done():
-				return nil
-			default:
-				stream <- message
-			}
 		}
 	}
 }
