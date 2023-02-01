@@ -1,10 +1,17 @@
 package interactor
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"time"
 
+	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type UserInteractor interface {
@@ -189,4 +196,30 @@ func (i *UserInteractorImpl) GetAll() ([]*entity.User, error) {
 	}
 
 	return users, nil
+}
+
+func gprcReq() {
+	var (
+		conn *grpc.ClientConn
+		err  error
+	)
+
+	// Set up a connection to the server.
+	for _, domain := range config.App.CorsDomains {
+		conn, err = grpc.Dial(domain, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+	}
+	defer conn.Close()
+	c := pb.NewUserServiceClient(conn)
+
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := c.CreateUser(ctx, &pb.User{Name: "name", Email: "email", Password: "password"})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	log.Printf("Greeting: %s", r.GetMessage())
 }
