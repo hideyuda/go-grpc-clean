@@ -6,7 +6,6 @@ import (
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
@@ -20,10 +19,8 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse
 	fmt.Println("Create")
 
 	var (
-		db = database.NewDB(config.Db{
-			Host: config.DbHost,
-		}, true)
-		firebase = driver.NewFirebaseImpl(config.Firebase{})
+		db       = database.NewDb()
+		firebase = driver.NewFirebaseImpl()
 	)
 
 	// err := bindAndValidate(c, req)
@@ -61,10 +58,8 @@ func (s *Server) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResp
 	fmt.Println("Get")
 
 	var (
-		db = database.NewDB(config.Db{
-			Host: config.DbHost,
-		}, true)
-		firebase = driver.NewFirebaseImpl(config.Firebase{})
+		db       = database.NewDb()
+		firebase = driver.NewFirebaseImpl()
 	)
 
 	tx, _ := db.Begin()

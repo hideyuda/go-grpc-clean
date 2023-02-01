@@ -20,26 +20,40 @@ import (
 
 // DB is a db instance which implement of interfaces.SQL
 //
-type DB struct {
+type Db struct {
 	db          *sqlx.DB
 	printsQuery bool
 }
 
-func NewDB(dbConfig config.Db, printsQuery bool) *DB {
+func NewDb() *Db {
 	var (
 		db            *sqlx.DB
 		err           error
 		count         = 1
 		maxRetryCount = 15
+		url           string
 	)
 
-	url := fmt.Sprintf("%s:%s@tcp([%s]:%d)/%s?charset=utf8mb4&collation=utf8mb4_general_ci&parseTime=true",
-		dbConfig.User,
-		dbConfig.Pass,
-		dbConfig.Host,
-		dbConfig.Port,
-		dbConfig.Name,
-	)
+	// 本番環境の場合は、CloudSQLにUnix接続する
+	if config.DbInstanceUnixSocket != "" {
+		url = fmt.Sprintf("%s:%s@unix(/%s)/%s?parseTime=true&charset=utf8mb4&collation=utf8mb4_general_ci",
+			config.DbUser,
+			config.DbPass,
+			config.DbInstanceUnixSocket,
+			config.DbName,
+		)
+
+		// ローカル環境の場合は、DockerのMySQLへTCP接続する
+	} else {
+
+		url = fmt.Sprintf("%s:%s@tcp([%s]:%d)/%s?charset=utf8mb4&collation=utf8mb4_general_ci&parseTime=true",
+			config.DbUser,
+			config.DbPass,
+			config.DbHost,
+			config.DbPort,
+			config.DbName,
+		)
+	}
 
 	for {
 		fmt.Println("Trying to connect DB...", url)
@@ -60,10 +74,10 @@ func NewDB(dbConfig config.Db, printsQuery bool) *DB {
 		}
 	}
 
-	return &DB{db: db, printsQuery: printsQuery}
+	return &Db{db: db, printsQuery: true}
 }
 
-func (d *DB) Get(name string, dest interface{}, query string, args ...interface{}) error {
+func (d *Db) Get(name string, dest interface{}, query string, args ...interface{}) error {
 	if d.printsQuery {
 		defer measureLatency(name, query, args...)()
 	}
@@ -78,7 +92,7 @@ func (d *DB) Get(name string, dest interface{}, query string, args ...interface{
 	return nil
 }
 
-func (d *DB) Select(name string, dest interface{}, query string, args ...interface{}) error {
+func (d *Db) Select(name string, dest interface{}, query string, args ...interface{}) error {
 	if d.printsQuery {
 		defer measureLatency(name, query, args...)()
 	}
@@ -92,7 +106,7 @@ func (d *DB) Select(name string, dest interface{}, query string, args ...interfa
 	return nil
 }
 
-func (d *DB) Exec(name string, query string, args ...interface{}) (int64, error) {
+func (d *Db) Exec(name string, query string, args ...interface{}) (int64, error) {
 	if d.printsQuery {
 		defer measureLatency(name, query, args...)()
 	}
@@ -111,7 +125,7 @@ func (d *DB) Exec(name string, query string, args ...interface{}) (int64, error)
 	return r.LastInsertId()
 }
 
-func (d *DB) Begin() (*Tx, error) {
+func (d *Db) Begin() (*Tx, error) {
 	tx, err := d.db.Beginx()
 	if err != nil {
 		return nil, err
@@ -120,7 +134,7 @@ func (d *DB) Begin() (*Tx, error) {
 	return &Tx{tx: tx, printsQuery: d.printsQuery}, nil
 }
 
-func (d *DB) MigrateUp(dir string) error {
+func (d *Db) MigrateUp(dir string) error {
 	migrations := &migrate.FileMigrationSource{
 		Dir: dir,
 	}
@@ -133,7 +147,7 @@ func (d *DB) MigrateUp(dir string) error {
 	return nil
 }
 
-func (d *DB) MigrateDown(dir string) error {
+func (d *Db) MigrateDown(dir string) error {
 	migrations := &migrate.FileMigrationSource{
 		Dir: dir,
 	}

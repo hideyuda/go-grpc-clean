@@ -31,6 +31,7 @@ func New() (Config, error) {
 	DbName = c.Db.Name
 	DbUser = c.Db.User
 	DbPass = c.Db.Pass
+	DbInstanceUnixSocket = c.Db.InstanceUnixSocket
 	FirebaseJsonFilePath = c.Firebase.JsonFilePath
 	FirebaseWebApiKey = c.Firebase.WebApiKey
 	SendgridApiKey = c.Sendgrid.ApiKey
@@ -52,11 +53,12 @@ type App struct {
 }
 
 type Db struct {
-	Host string `required:"true" split_words:"true"`
-	Port int    `required:"true" split_words:"true"`
-	Name string `required:"true" split_words:"true"`
-	User string `required:"true" split_words:"true"`
-	Pass string `required:"true" split_words:"true"`
+	Host               string `required:"true" split_words:"true"`
+	Port               int    `required:"true" split_words:"true"`
+	Name               string `required:"true" split_words:"true"`
+	User               string `required:"true" split_words:"true"`
+	Pass               string `required:"true" split_words:"true"`
+	InstanceUnixSocket string `required:"true" split_words:"true"`
 }
 
 type Firebase struct {
@@ -102,6 +104,8 @@ var (
 	DbUser string
 	// DbPass is the password of the database.
 	DbPass string
+	// DbInstanceUnixSocket is the instance unix socket of the database.
+	DbInstanceUnixSocket string
 	// FirebaseJsonFilePath is the Json file path of the firebase.
 	FirebaseJsonFilePath string
 	// FirebaseWebApiKey is the web Api key of the firebase.

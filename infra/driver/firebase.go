@@ -26,9 +26,9 @@ type FirebaseImpl struct {
 	webAPIKey string
 }
 
-func NewFirebaseImpl(fbConfig config.Firebase) usecase.Firebase {
+func NewFirebaseImpl() usecase.Firebase {
 	ctx := context.Background()
-	opts := option.WithCredentialsFile(fbConfig.JsonFilePath)
+	opts := option.WithCredentialsFile(config.FirebaseJsonFilePath)
 
 	app, err := firebase.NewApp(ctx, nil, opts)
 	if err != nil {
@@ -48,7 +48,7 @@ func NewFirebaseImpl(fbConfig config.Firebase) usecase.Firebase {
 	return &FirebaseImpl{
 		auth:      auth,
 		firestore: firestore,
-		webAPIKey: fbConfig.WebApiKey,
+		webAPIKey: config.FirebaseWebApiKey,
 	}
 }
 
@@ -187,10 +187,10 @@ func (d *FirebaseImpl) UpdatePassword(password, uid string) error {
 	return err
 }
 
-// Listen はMessageコレクションのリアルタイムアップデートを確認する処理です
+// Listen はchatコレクションのリアルタイムアップデートを確認する処理です
 //  https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots
-func (d *FirebaseImpl) Listen(ctx context.Context, stream chan<- entity.Chat) error {
-	message := entity.Chat{}
+func (d *FirebaseImpl) GetChatStream(ctx context.Context, stream chan<- entity.Chat) error {
+	chat := entity.Chat{}
 
 	snapIter := d.firestore.Collection("chat").Snapshots(ctx)
 	defer snapIter.Stop()
@@ -198,23 +198,23 @@ func (d *FirebaseImpl) Listen(ctx context.Context, stream chan<- entity.Chat) er
 	for {
 		snap, err := snapIter.Next()
 		if err != nil {
-			return fmt.Errorf("failed to MessageRepositoryImpl.Listen, snapIter.Next: %s", err)
+			return fmt.Errorf("failed to chatRepositoryImpl.Listen, snapIter.Next: %s", err)
 		}
 		log.Printf("change size: %d\n", len(snap.Changes))
 		for _, diff := range snap.Changes {
 			switch diff.Kind {
 			case firestore.DocumentAdded:
-				if err := diff.Doc.DataTo(&message); err != nil {
-					return fmt.Errorf("failed to MessageRepositoryImpl.Listen: %s", err)
+				if err := diff.Doc.DataTo(&chat); err != nil {
+					return fmt.Errorf("failed to chatRepositoryImpl.Listen: %s", err)
 				}
 			}
-			message.Uuid = diff.Doc.Ref.ID
+			chat.Uuid = diff.Doc.Ref.ID
 
 			select {
 			case <-ctx.Done():
 				return nil
 			default:
-				stream <- message
+				stream <- chat
 			}
 		}
 	}

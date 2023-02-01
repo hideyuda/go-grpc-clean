@@ -91,15 +91,17 @@ func (i *ChatInteractorImpl) GetById(id uint) (*entity.Chat, error) {
 func (i *ChatInteractorImpl) GetStream(groupId uint) ([]*entity.Chat, error) {
 	var (
 		chats []*entity.Chat
-		err   error
+		// err   error
 	)
 
+	// i.firebase.GetChatStream(groupId, chats)
+
 	// ユーザー登録
-	chats, err = i.chatRepository.GetListByGroupId(groupId)
-	if err != nil {
-		fmt.Println("error is:", err)
-		return chats, err
-	}
+	// chats, err = i.chatRepository.GetListByGroupId(groupId)
+	// if err != nil {
+	// 	fmt.Println("error is:", err)
+	// 	return chats, err
+	// }
 
 	return chats, nil
 }

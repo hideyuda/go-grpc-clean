@@ -1,5 +1,11 @@
 package usecase
 
+import (
+	"context"
+
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+)
+
 type Firebase interface {
 	VerifyIDToken(idToken string) (string, error)
 	GetCustomToken(uid string) (string, error)
@@ -9,6 +15,7 @@ type Firebase interface {
 	CreateUser(email, password string) (string, error)
 	UpdateEmail(email, uid string) error
 	UpdatePassword(password, uid string) error
+	GetChatStream(ctx context.Context, stream chan<- entity.Chat) error
 }
 
 type Cache interface {

@@ -45,14 +45,14 @@ func main() {
 	switch cfg.App.Service {
 	case "api":
 		// 一旦 apiコンテナを立ち上げる時にマイグレーションする
-		db := database.NewDB(cfg.Db, true)
+		db := database.NewDb()
 		err := db.MigrateUp(".migrations")
 		if err != nil {
 			fmt.Println(err)
 		}
 		// cache := driver.NewRedisCacheImpl(cfg.Redis)
 		if cfg.App.Env == "local" {
-			firebase := driver.NewFirebaseImpl(cfg.Firebase)
+			firebase := driver.NewFirebaseImpl()
 			fmt.Println("getTestUserToken:", uuid.New().String())
 			getTestUserToken(firebase, uuid.New().String())
 		}

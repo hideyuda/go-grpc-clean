@@ -8,7 +8,6 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
@@ -22,10 +21,8 @@ func (s *Server) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatResponse
 	fmt.Println("Create")
 
 	var (
-		db = database.NewDB(config.Db{
-			Host: config.DbHost,
-		}, true)
-		firebase = driver.NewFirebaseImpl(config.Firebase{})
+		db       = database.NewDb()
+		firebase = driver.NewFirebaseImpl()
 	)
 
 	// err := bindAndValidate(c, req)
@@ -61,10 +58,8 @@ func (s *Server) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.ChatResp
 	fmt.Println("Get")
 
 	var (
-		db = database.NewDB(config.Db{
-			Host: config.DbHost,
-		}, true)
-		firebase = driver.NewFirebaseImpl(config.Firebase{})
+		db       = database.NewDb()
+		firebase = driver.NewFirebaseImpl()
 	)
 
 	tx, _ := db.Begin()
@@ -90,20 +85,18 @@ func (s *Server) GetChatStream(req *pb.GetStreamRequest, server pb.ChatService_G
 	go func() error {
 		defer close(stream)
 		var (
-			db = database.NewDB(config.Db{
-				Host: config.DbHost,
-			}, true)
-			firebase = driver.NewFirebaseImpl(config.Firebase{})
+			// db = database.NewDB(config.Db{
+			// 	Host: config.DbHost,
+			// }, true)
+			firebase = driver.NewFirebaseImpl()
 		)
 
 		eg, _ := errgroup.WithContext(ctx)
 		eg.Go(func() error {
-			h := di.InitializeChatHandler(db, firebase)
-			presenter, err := h.GetStream(uint(req.GroupId))
+			err := firebase.GetChatStream(ctx, stream)
 			if err != nil {
 				return err
 			}
-			fmt.Println(presenter)
 			return nil
 		})
 		if err := eg.Wait(); err != nil {
