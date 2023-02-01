@@ -205,12 +205,11 @@ func gprcReq() {
 	)
 
 	// Set up a connection to the server.
-	for _, domain := range config.App.CorsDomains {
-		conn, err = grpc.Dial(domain, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			log.Fatalf("did not connect: %v", err)
-		}
+	conn, err = grpc.Dial(config.App.PythonDomain, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
 	}
+
 	defer conn.Close()
 	c := pb.NewUserServiceClient(conn)
 

@@ -28,6 +28,8 @@ func New() (Config, error) {
 		BasicPasswords: c.App.BasicPasswords,
 		BasicSecret:    c.App.BasicSecret,
 		CorsDomains:    c.App.CorsDomains,
+		ClientDomain:   c.App.ClientDomain,
+		PythonDomain:   c.App.PythonDomain,
 		LogFilePath:    c.App.LogFilePath,
 	}
 
@@ -49,34 +51,6 @@ func New() (Config, error) {
 		ApiKey: c.Sendgrid.ApiKey,
 	}
 
-	// SlackVar = Slack{
-	// 	WebhookURL: c.Slack.WebhookURL,
-	// }
-
-	// GoogleVar = Google{
-	// 	ClientID:     c.Google.ClientID,
-	// 	ClientSecret: c.Google.ClientSecret,
-	// }
-	// AppEnv = c.App.Env
-	// AppService = c.App.Service
-	// AppBatchType = c.App.BatchType
-	// AppPort = c.App.Port
-	// AppBasicUsers = c.App.BasicUsers
-	// AppBasicPasswords = c.App.BasicPasswords
-	// AppCorsDomains = c.App.CorsDomains
-	// DbHost = c.Db.Host
-	// DbPort = c.Db.Port
-	// DbName = c.Db.Name
-	// DbUser = c.Db.User
-	// DbPass = c.Db.Pass
-	// DbInstanceUnixSocket = c.Db.InstanceUnixSocket
-	// FirebaseJsonFilePath = c.Firebase.JsonFilePath
-	// FirebaseWebApiKey = c.Firebase.WebApiKey
-	// SendgridApiKey = c.Sendgrid.ApiKey
-	// SlackWebhookURL = c.Slack.WebhookURL
-	// GoogleClientID = c.Google.ClientID
-	// GoogleClientSecret = c.Google.ClientSecret
-
 	return c, nil
 }
 
@@ -89,6 +63,8 @@ type AppObj struct {
 	BasicPasswords []string `required:"true" split_words:"true"`
 	BasicSecret    string   `required:"true" split_words:"true"`
 	CorsDomains    []string `required:"true" split_words:"true"`
+	ClientDomain   string   `required:"true" split_words:"true"`
+	PythonDomain   string   `required:"true" split_words:"true"`
 	LogFilePath    string   `required:"true" split_words:"true"`
 }
 
