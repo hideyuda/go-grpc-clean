@@ -1,6 +1,9 @@
 package entity
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	ErrServerError = errors.New("SERVER_ERROR")
@@ -25,38 +28,38 @@ var (
 func ErrorInfo(err error) (code int, message string) {
 	if errors.Is(err, ErrServerError) {
 		code = 500
-		message = "server error"
+		message = fmt.Sprint("server error\n details:", err)
 	} else if errors.Is(err, ErrDBError) {
 		code = 500
-		message = "db error"
+		message = fmt.Sprint("db error\n details:", err)
 
 	} else if errors.Is(err, ErrRequestError) {
 		code = 400
-		message = "request error"
+		message = fmt.Sprint("request error\n details:", err)
 	} else if errors.Is(err, ErrNotFound) {
 		code = 404
-		message = "not found"
+		message = fmt.Sprint("not found\n details:", err)
 	} else if errors.Is(err, ErrDuplicateEntry) {
 		code = 409
-		message = "duplicate entry"
+		message = fmt.Sprint("duplicated entry\n details:", err)
 	} else if errors.Is(err, ErrFirebaseExpiredToken) {
 		code = 400
-		message = "firebase token expired"
+		message = fmt.Sprint("firebase expired token\n details:", err)
 	} else if errors.Is(err, ErrFirebaseInvalidToken) {
 		code = 400
-		message = "firebase invalid token"
+		message = fmt.Sprint("firebase invalid token\n details:", err)
 	} else if errors.Is(err, ErrFirebaseFailedToVerify) {
 		code = 400
-		message = "firebase failed to verify"
+		message = fmt.Sprint("firebase failed to verify\n details:", err)
 	} else if errors.Is(err, ErrFirebaseFutureIssued) {
 		code = 400
-		message = "request error"
+		message = fmt.Sprint("firebase future issued\n details:", err)
 	} else if errors.Is(err, ErrFirebaseEmailExists) {
 		code = 400
-		message = "firebase email already exists"
+		message = fmt.Sprint("firebase email already exsists\n details:", err)
 	} else {
 		code = 500
-		message = "unknown"
+		message = fmt.Sprint("unknown\n details:", err)
 	}
 	return
 }
