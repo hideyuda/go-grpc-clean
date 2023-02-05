@@ -1,11 +1,16 @@
 package router
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+
+	"github.com/hidenari-yuda/go-grpc-clean/repository"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
@@ -20,8 +25,71 @@ import (
 type ServiceServer struct {
 	pb.UnimplementedUserServiceServer
 	pb.UnimplementedChatServiceServer
-	Db       *database.Db
-	Firebase *driver.FirebaseImpl
+	UserInteractor interactor.UserInteractor
+	ChatInteractor interactor.ChatInteractor
+	Db             *database.Db
+	Firebase       usecase.Firebase
+}
+
+// callInfo contains all related configuration and information about an RPC.
+// type callInfo struct {
+// 	compressorType        string
+// 	failFast              bool
+// 	maxReceiveMessageSize *int
+// 	maxSendMessageSize    *int
+// 	creds                 credentials.PerRPCCredentials
+// 	contentSubtype        string
+// 	codec                 baseCodec
+// 	maxRetryRPCBufferSize int
+// }
+
+// func NewSercviceServer(userHandler handler.UserHandlerImpl, handlerChatHandler handler.ChatHandler) *ServiceServer {
+// 	return &ServiceServer{
+// 		UserInteractor: userInteractorImpl,
+// 		Db:             database.NewDb(),
+// 		Firebase:       driver.NewFirebaseImpl(),
+// 	}
+// }
+
+// CallOption configures a Call before it starts or extracts information from
+// a Call after it completes.
+// type CallOption interface {
+// 	// before is called before the call is sent to any server.  If before
+// 	// returns a non-nil error, the RPC fails with that error.
+// 	before(*callInfo) error
+
+// 	// after is called after the call has completed.  after cannot return an
+// 	// error, so any failures should be reported via output parameters.
+// 	after(*callInfo, *csAttempt)
+// }
+
+func NewUserSercviceServer(userInteractor interactor.UserInteractor) *ServiceServer {
+	return &ServiceServer{
+		UserInteractor: userInteractor,
+		Db:             database.NewDb(),
+		Firebase:       driver.NewFirebaseImpl(),
+	}
+}
+
+func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ServiceServer {
+	return &ServiceServer{
+		ChatInteractor: chatInteractor,
+		Db:             database.NewDb(),
+		Firebase:       driver.NewFirebaseImpl(),
+	}
+}
+
+func register(ctx context.Context, s *grpc.Server) {
+	var (
+		db       = database.NewDb()
+		firebase = driver.NewFirebaseImpl()
+	)
+	userRepository := repository.NewUserRepositoryImpl(db)
+	chatRepository := repository.NewChatRepositoryImpl(db)
+	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
+	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
+	pb.RegisterUserServiceServer(s, NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
+	pb.RegisterChatServiceServer(s, NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository, chatGroupRepository, chatUserRepository)))
 }
 
 type Router struct {
@@ -37,6 +105,10 @@ func NewRouter(cfg config.Config) *Router {
 }
 
 func (r *Router) SetUp() *Router {
+	var (
+		db       = database.NewDb()
+		firebase = driver.NewFirebaseImpl()
+	)
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.App.Port))
 	if err != nil {
 		panic(err)
@@ -48,8 +120,15 @@ func (r *Router) SetUp() *Router {
 
 	// https://zenn.dev/hsaki/books/golang-grpc-starting/viewer/server#%5B%E3%82%B3%E3%83%A9%E3%83%A0%5D%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AA%E3%83%95%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%81%AF%EF%BC%9F
 	reflection.Register(s)
-	pb.RegisterUserServiceServer(s, &ServiceServer{})
-	pb.RegisterChatServiceServer(s, &ServiceServer{})
+
+	pb.RegisterUserServiceServer(s, &ServiceServer{
+		Db:       db,
+		Firebase: firebase,
+	})
+	pb.RegisterChatServiceServer(s, &ServiceServer{
+		Db:       db,
+		Firebase: firebase,
+	})
 
 	go func() {
 		fmt.Printf("start gRPC server, port: %d", config.App.Port)

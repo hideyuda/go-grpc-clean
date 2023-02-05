@@ -51,19 +51,16 @@ func (s *ServiceServer) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatR
 func (s *ServiceServer) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.ChatResponse, error) {
 	fmt.Println("Get")
 
-	var (
-		db       = database.NewDb()
-		firebase = driver.NewFirebaseImpl()
-	)
+	// var (
+	// 	db       = database.NewDb()
+	// 	firebase = driver.NewFirebaseImpl()
+	// )
 
-	tx, _ := db.Begin()
-	i := di.InitializeChatInteractor(tx, firebase)
+	i := di.InitializeChatInteractor(s.Db, s.Firebase)
 	res, err := i.GetById(uint(req.Chat.Id))
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
 
 	return &pb.ChatResponse{
 		Chat: &pb.Chat{
@@ -76,9 +73,9 @@ func (s *ServiceServer) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.C
 }
 
 func (s *ServiceServer) GetChatStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer) error {
-	var (
-		firebase = driver.NewFirebaseImpl()
-	)
+	fmt.Println("GetStream")
+	// h := di.InitializeChatHandler(s.Db, s.Firebase)
+	// err := h.GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -86,7 +83,7 @@ func (s *ServiceServer) GetChatStream(req *pb.GetStreamRequest, server pb.ChatSe
 	stream := make(chan entity.Chat)
 
 	go func() {
-		i := di.InitializeChatInteractor(nil, firebase)
+		i := di.InitializeChatInteractor(s.Db, s.Firebase)
 		err := i.GetStream(ctx, stream)
 		if err != nil {
 			fmt.Println(err)

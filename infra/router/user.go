@@ -7,9 +7,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
-	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
@@ -19,10 +17,10 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 
 	fmt.Println("Create")
 
-	var (
-		db       = database.NewDb()
-		firebase = driver.NewFirebaseImpl()
-	)
+	// var (
+	// 	db       = database.NewDb()
+	// 	firebase = driver.NewFirebaseImpl()
+	// )
 
 	input := &entity.User{
 		Name:      req.Name,
@@ -31,8 +29,11 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 		CreatedAt: req.CreatedAt.AsTime(),
 	}
 
-	tx, _ := db.Begin()
-	i := di.InitializeUserInteractor(tx, firebase)
+	fmt.Println("db is:", s.Db)
+	fmt.Println("firebase is :", s.Firebase)
+
+	tx, _ := s.Db.Begin()
+	i := di.InitializeUserInteractor(tx, s.Firebase)
 	res, err := i.Create(input)
 	if err != nil {
 		tx.Rollback()
@@ -55,19 +56,11 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 func (s *ServiceServer) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 	fmt.Println("Get")
 
-	var (
-		db       = database.NewDb()
-		firebase = driver.NewFirebaseImpl()
-	)
-
-	tx, _ := db.Begin()
-	i := di.InitializeUserInteractor(tx, firebase)
+	i := di.InitializeUserInteractor(s.Db, s.Firebase)
 	res, err := i.GetById(uint(req.Id))
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
 
 	return &pb.UserResponse{
 		Error: false,
