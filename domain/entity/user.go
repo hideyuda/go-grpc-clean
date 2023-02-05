@@ -11,29 +11,36 @@ type User struct {
 	Uuid       uuid.UUID `db:"uuid" json:"uuid"`
 	FirebaseId string    `db:"firebase_id" json:"firebase_id"`
 	Name       string    `db:"name" json:"name"`
-	Email      string    `db:"email" json:"email"`
+	Mail       string    `db:"mail" json:"mail"`
 	Password   string    `db:"password" json:"password"`
-	UserType   uint      `db:"user_type" json:"user_type"`
+	UserType   uint      `db:"user_type" json:"user_type"` // 0: guest(default), 1: normal, 2: admin
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
+
+	// relative to other tables
+	Org_Id     uint        `db:"org_id" json:"org_id"`
+	ChatGroups []ChatGroup `db:"chat_groups" json:"chat_groups"`
+
+	// not exist in db
+	Rank uint `db:"rank" json:"rank"`
 }
 
 func NewUser(
 	name string,
-	email string,
+	mail string,
 	password string,
 	userType uint,
 ) *User {
 	return &User{
 		Name:     name,
-		Email:    email,
+		Mail:     mail,
 		Password: password,
 		UserType: userType,
 	}
 }
 
 type SignUpParam struct {
-	Email    string `db:"email" json:"email" validate:"required"`
+	Mail     string `db:"mail" json:"mail" validate:"required"`
 	Password string `db:"password" json:"password" validate:"required"`
 }
 
