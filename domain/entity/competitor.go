@@ -14,6 +14,8 @@ type Competitor struct {
 	CreatedAt      time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt      time.Time `db:"updated_at" json:"updated_at"`
 
+	OverPrice uint `db:"over_price" json:"over_price"` // 0: under, 1: over
+
 	// relative to other tables
 	User_Id uint `db:"user_id" json:"user_id"`
 

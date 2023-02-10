@@ -24,7 +24,7 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 
 	input := &entity.User{
 		Name:      req.Name,
-		Email:     req.Email,
+		Mail:      req.Email,
 		Password:  req.Password,
 		CreatedAt: req.CreatedAt.AsTime(),
 	}
@@ -46,7 +46,7 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 		User: &pb.User{
 			Id:        uint32(res.Id),
 			Name:      res.Name,
-			Email:     res.Email,
+			Email:     res.Mail,
 			Password:  res.Password,
 			CreatedAt: timestamppb.New(res.CreatedAt),
 		},
@@ -67,7 +67,7 @@ func (s *ServiceServer) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.U
 		User: &pb.User{
 			Id:        uint32(res.Id),
 			Name:      res.Name,
-			Email:     res.Email,
+			Email:     res.Mail,
 			Password:  res.Password,
 			CreatedAt: timestamppb.New(res.CreatedAt),
 		},
