@@ -1,4 +1,4 @@
-FROM golang:1.18 as builder
+FROM golang:1.20 as builder
 WORKDIR /go/src/app
 RUN groupadd -g 10001 app \
   && useradd -u 10001 -g app app
