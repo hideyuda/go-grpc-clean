@@ -27,12 +27,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
           
-    - name: Download modules
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: go mod download
+    # - name: Download modules
+    #   if: steps.cache.outputs.cache-hit != 'true'
+    #   run: go mod download
 
-    - name: Build
-      run: go build -v .
+    # - name: Build
+    #   run: go build -v .
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
