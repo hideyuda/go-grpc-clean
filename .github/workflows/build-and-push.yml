@@ -70,14 +70,14 @@ jobs:
         SLACK_USERNAME: Gilfoyle
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-    - name: Slack Notification
-      if: failure()
-      uses: rtCamp/action-slack-notify@master
-      env:
-        SLACK_CHANNEL: docker-image
-        SLACK_COLOR: '#C7474D'
-        # SLACK_ICON:
-        SLACK_MESSAGE: 'Failed to build and push image...!!'
-        SLACK_TITLE: GitHub Action
-        SLACK_USERNAME: Gilfoyle
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    # - name: Slack Notification
+    #   if: failure()
+    #   uses: rtCamp/action-slack-notify@master
+    #   env:
+    #     SLACK_CHANNEL: docker-image
+    #     SLACK_COLOR: '#C7474D'
+    #     # SLACK_ICON:
+    #     SLACK_MESSAGE: 'Failed to build and push image...!!'
+    #     SLACK_TITLE: GitHub Action
+    #     SLACK_USERNAME: Gilfoyle
+    #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
