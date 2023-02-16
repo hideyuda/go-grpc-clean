@@ -24,7 +24,7 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 
 	input := &entity.User{
 		Name:      req.Name,
-		Mail:      req.Email,
+		Email:     req.Email,
 		Password:  req.Password,
 		CreatedAt: req.CreatedAt.AsTime(),
 	}
@@ -46,14 +46,14 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 		User: &pb.User{
 			Id:        uint32(res.Id),
 			Name:      res.Name,
-			Email:     res.Mail,
+			Email:     res.Email,
 			Password:  res.Password,
 			CreatedAt: timestamppb.New(res.CreatedAt),
 		},
 	}, nil
 }
 
-func (s *ServiceServer) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
+func (s *ServiceServer) GetUserById(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 	fmt.Println("Get")
 
 	i := di.InitializeUserInteractor(s.Db, s.Firebase)
@@ -67,7 +67,7 @@ func (s *ServiceServer) GetUser(ctx context.Context, req *pb.UserRequest) (*pb.U
 		User: &pb.User{
 			Id:        uint32(res.Id),
 			Name:      res.Name,
-			Email:     res.Mail,
+			Email:     res.Email,
 			Password:  res.Password,
 			CreatedAt: timestamppb.New(res.CreatedAt),
 		},

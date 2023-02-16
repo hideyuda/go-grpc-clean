@@ -1,4 +1,4 @@
-package request
+package client
 
 import (
 	"context"
@@ -11,18 +11,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type UserRequestImpl struct {
+type UserClientImpl struct {
 }
 
-func NewUserRequestImpl() UserRequest {
-	return &UserRequestImpl{}
+func NewUserClientImpl() UserClient {
+	return &UserClientImpl{}
 }
 
-type UserRequest interface {
+type UserClient interface {
 	DetectTextFromImage()
 }
 
-func (r *UserRequestImpl) DetectTextFromImage() {
+func (r *UserClientImpl) DetectTextFromImage() {
 	var (
 		conn *grpc.ClientConn
 		err  error

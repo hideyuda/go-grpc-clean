@@ -3,8 +3,8 @@ package interactor
 import (
 	"fmt"
 
+	"github.com/hidenari-yuda/go-grpc-clean/client"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"github.com/hidenari-yuda/go-grpc-clean/infra/request"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
@@ -189,7 +189,7 @@ func (i *UserInteractorImpl) GetAll() ([]*entity.User, error) {
 		return users, err
 	}
 
-	req := request.NewUserRequestImpl()
+	req := client.NewUserClientImpl()
 	req.DetectTextFromImage()
 
 	return users, nil

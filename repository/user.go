@@ -31,7 +31,7 @@ func (r *UserRepositoryImpl) Create(param *entity.User) error {
 			uuid,
 			firebase_id,
 			name, 
-			mail, 
+			email, 
 			password,
 			user_type,
 			created_at,
@@ -49,7 +49,7 @@ func (r *UserRepositoryImpl) Create(param *entity.User) error {
 		utils.CreateUUID(),
 		param.FirebaseId,
 		param.Name,
-		param.Mail,
+		param.Email,
 		param.Password,
 		param.UserType,
 		now,
@@ -69,13 +69,13 @@ func (r *UserRepositoryImpl) Update(user *entity.User) error {
 		r.Name+"Update",
 		`UPDATE users SET
 			name = ?,
-			mail = ?,
+			email = ?,
 			password = ?,
 			user_type = ?,
 			updated_at = ?
 		WHERE _id = ?`,
 		user.Name,
-		user.Mail,
+		user.Email,
 		user.Password,
 		user.UserType,
 		time.Now(),
@@ -126,10 +126,14 @@ func (r *UserRepositoryImpl) UpdateColumnInt(lineUserId, column string, value in
 }
 
 /***** Get *****/
-func (r *UserRepositoryImpl) GetById(id uint) (user *entity.User, err error) {
-	err = r.executer.Get(
-		r.Name+"SignIn",
-		user,
+func (r *UserRepositoryImpl) GetById(id uint) (*entity.User, error) {
+	var (
+		user entity.User
+	)
+
+	err := r.executer.Get(
+		r.Name+"GetById",
+		&user,
 		"SELECT * FROM users WHERE id = ?",
 		id,
 	)
@@ -138,7 +142,7 @@ func (r *UserRepositoryImpl) GetById(id uint) (user *entity.User, err error) {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (r *UserRepositoryImpl) SignIn(email, password string) (user *entity.User, err error) {

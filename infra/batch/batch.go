@@ -1,6 +1,6 @@
 package batch
 
-import "github.com/hidenari-yuda/go-docker-template/domain/config"
+import "github.com/hidenari-yuda/go-grpc-clean/domain/config"
 
 type Batch struct {
 	cfg config.Config

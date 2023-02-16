@@ -14,7 +14,7 @@ type UserRepository interface {
 
 	// Get
 	GetById(id uint) (*entity.User, error)
-	SignIn(email, password string) (user *entity.User, err error)
+	SignIn(mail, password string) (user *entity.User, err error)
 	GetByFirebaseId(firebaseId string) (*entity.User, error)
 
 	// admin

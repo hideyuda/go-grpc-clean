@@ -17,7 +17,6 @@ import (
 // Injectors from wire.go:
 
 // User
-//
 func InitializeUserHandler(db repository.SQLExecuter, fb usecase.Firebase) handler.UserHandler {
 	userRepository := repository.NewUserRepositoryImpl(db)
 	userInteractor := interactor.NewUserInteractorImpl(fb, userRepository)
@@ -26,7 +25,6 @@ func InitializeUserHandler(db repository.SQLExecuter, fb usecase.Firebase) handl
 }
 
 // Chat
-//
 func InitializeChatHandler(db repository.SQLExecuter, fb usecase.Firebase) handler.ChatHandler {
 	chatRepository := repository.NewChatRepositoryImpl(db)
 	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
@@ -37,7 +35,6 @@ func InitializeChatHandler(db repository.SQLExecuter, fb usecase.Firebase) handl
 }
 
 // User
-//
 func InitializeUserInteractor(db repository.SQLExecuter, fb usecase.Firebase) interactor.UserInteractor {
 	userRepository := repository.NewUserRepositoryImpl(db)
 	userInteractor := interactor.NewUserInteractorImpl(fb, userRepository)
@@ -45,7 +42,6 @@ func InitializeUserInteractor(db repository.SQLExecuter, fb usecase.Firebase) in
 }
 
 // Chat
-//
 func InitializeChatInteractor(db repository.SQLExecuter, fb usecase.Firebase) interactor.ChatInteractor {
 	chatRepository := repository.NewChatRepositoryImpl(db)
 	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
