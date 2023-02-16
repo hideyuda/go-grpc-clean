@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
@@ -46,7 +46,7 @@ func (r *UserRepositoryImpl) Create(param *entity.User) error {
 				?,
 				?
 		)`,
-		utility.CreateUUID(),
+		utils.CreateUUID(),
 		param.FirebaseId,
 		param.Name,
 		param.Mail,

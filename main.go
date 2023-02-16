@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/router"
@@ -23,7 +23,7 @@ import (
 
 func init() {
 
-	time.Local = utility.Tokyo
+	time.Local = utils.Tokyo
 
 	if err := godotenv.Load(); err != nil {
 		panic("Failed to load .env file")
@@ -41,7 +41,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	utility.LoggingSettings(config.App.LogFilePath)
+	utils.LoggingSettings(config.App.LogFilePath)
 	log.Println(fmt.Sprint("Server is running on port: ", config.App.Port))
 
 	// ctx := context.Background()

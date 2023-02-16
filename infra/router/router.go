@@ -146,7 +146,7 @@ func (r *Router) SetUp() *Router {
 	// var (
 	// db       = database.NewDB(r.cfg.Db, true)
 	// firebase = driver.NewFirebaseImpl(r.cfg.Firebase)
-	// basicAuth = utility.NewBasicAuth(r.cfg)
+	// basicAuth = utils.NewBasicAuth(r.cfg)
 	// )
 
 	// r.Engine.HidePort = true

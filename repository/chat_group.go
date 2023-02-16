@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
@@ -36,7 +36,7 @@ func (r *ChatGroupRepositoryImpl) Create(param *entity.ChatGroup) error {
 				?, 
 				?
 		)`,
-		utility.CreateUUID(),
+		utils.CreateUUID(),
 		param.Name,
 		now,
 		now,
