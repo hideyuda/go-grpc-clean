@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -9,10 +8,10 @@ import (
 
 func LoggingSettings(logFile string) {
 	// refresh logFile if it gets too big
-	if err := os.Truncate(logFile, 1000000); err != nil {
-		os.Remove(logFile)
-		fmt.Println("log file is removed")
-	}
+	// if err := os.Truncate(logFile, 1000000); err != nil {
+	// 	os.Remove(logFile)
+	// 	fmt.Println("log file is removed")
+	// }
 
 	logfile, err := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

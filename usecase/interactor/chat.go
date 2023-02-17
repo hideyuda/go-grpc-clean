@@ -44,15 +44,9 @@ func NewChatInteractorImpl(
 }
 
 func (i *ChatInteractorImpl) Create(chat *entity.Chat) (*entity.Chat, error) {
-	var (
-		err error
-	)
-
-	if chat.GroupId == 0 {
-	}
 
 	// ユーザー登録
-	err = i.chatRepository.Create(chat)
+	err := i.chatRepository.Create(chat)
 	if err != nil {
 		return chat, err
 	}

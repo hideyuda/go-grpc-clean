@@ -1,65 +1,95 @@
 package handler
 
 import (
-	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
+	"context"
+	"fmt"
+
+	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
-type ChatHandler interface {
-	// // Gest API
-	// Create(param *entity.Chat) (presenter.Presenter, error)
-	// // Update(param *entity.Chat) (presenter.Presenter, error)
+func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
 
-	// // Get
-	// GetById(id uint) (presenter.Presenter, error)
-	// GetStream(ctx context.Context, stream chan<- entity.Chat) error
+	// Convert context.Context to echo.Context in gRPC server
+
+	fmt.Println("Create")
+
+	input := &entity.Chat{
+		From:    uint(req.From),
+		Content: req.Content,
+	}
+
+	tx, _ := s.Db.Begin()
+	res, err := s.ChatInteractor.Create(input)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
+
+	return &pb.ChatResponse{
+		Chat: &pb.Chat{
+			Id:        uint32(res.Id),
+			From:      uint32(res.From),
+			Content:   res.Content,
+			CreatedAt: timestamppb.New(res.CreatedAt),
+		},
+	}, nil
 }
 
-type ChatHandlerImpl struct {
-	ChatInteractor interactor.ChatInteractor
+func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.GetByIdRequest) (*pb.ChatResponse, error) {
+	fmt.Println("Get")
+
+	// var (
+	// 	db       = database.NewDb()
+	// 	firebase = driver.NewFirebaseImpl()
+	// )
+
+	res, err := s.ChatInteractor.GetById(uint(req.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ChatResponse{
+		Chat: &pb.Chat{
+			Id:        uint32(res.Id),
+			From:      uint32(res.From),
+			Content:   res.Content,
+			CreatedAt: timestamppb.New(res.CreatedAt),
+		},
+	}, nil
 }
 
-func NewChatHandlerImpl(ui interactor.ChatInteractor) ChatHandler {
-	return &ChatHandlerImpl{
-		ChatInteractor: ui,
+func (s *ChatServiceServer) GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetStreamServer) error {
+	fmt.Println("GetStream")
+	// h := di.InitializeChatHandler(s.Db, s.Firebase)
+	// err := h.GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	stream := make(chan entity.Chat)
+
+	go func() {
+		err := s.ChatInteractor.GetStream(ctx, stream)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	for {
+		v := <-stream
+		createdAt := timestamppb.New(v.CreatedAt)
+		if err := server.Send(&pb.ChatResponse{
+			Chat: &pb.Chat{
+				From:      uint32(v.From),
+				Content:   v.Content,
+				CreatedAt: createdAt,
+			},
+		}); err != nil {
+			return err
+		}
 	}
 }
-
-// func (h *ChatHandlerImpl) Create(param *entity.Chat) (presenter.Presenter, error) {
-// 	output, err := h.ChatInteractor.Create(param)
-// 	if err != nil {
-// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// 		return nil, err
-// 	}
-
-// 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
-// }
-
-// // func (h *ChatHandlerImpl) Update(param *entity.Chat) (presenter.Presenter, error) {
-// // 	output, err := h.ChatInteractor.Update(param)
-// // 	if err != nil {
-// // 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// // 		return nil, err
-// // 	}
-
-// // 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
-// // }
-
-// // Get
-// func (h *ChatHandlerImpl) GetById(id uint) (presenter.Presenter, error) {
-// 	output, err := h.ChatInteractor.GetById(id)
-// 	if err != nil {
-// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// 		return nil, err
-// 	}
-
-// 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
-// }
-
-// func (h *ChatHandlerImpl) GetStream(ctx context.Context, stream chan<- entity.Chat) error {
-// 	err := h.ChatInteractor.GetStream(ctx, stream)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }

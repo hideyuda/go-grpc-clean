@@ -1,65 +1,44 @@
 package handler
 
-import "github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
+import (
+	"context"
+	"fmt"
 
-type UserHandler interface {
-	// Gest API
-	// Create(param *entity.User) (presenter.Presenter, error)
-	// Update(param *entity.User) (presenter.Presenter, error)
+	"github.com/hidenari-yuda/go-grpc-clean/domain/requests"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
 
-	// // Get
-	// GetById(id uint) (presenter.Presenter, error)
-	// SignIn(param *entity.SignInParam) (presenter.Presenter, error)
-}
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
+)
 
-type UserHandlerImpl struct {
-	UserInteractor interactor.UserInteractor
-}
+func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.UserResponse, error) {
 
-func NewUserHandlerImpl(ui interactor.UserInteractor) UserHandler {
-	return &UserHandlerImpl{
-		UserInteractor: ui,
+	fmt.Println("db is:", s.Db)
+	fmt.Println("firebase is :", s.Firebase)
+
+	input, err := requests.NewUser(req)
+	if err != nil {
+		return nil, handleError(err)
 	}
+
+	tx, _ := s.Db.Begin()
+	res, err := s.UserInteractor.Create(input)
+	if err != nil {
+		tx.Rollback()
+		return nil, handleError(err)
+	}
+
+	tx.Commit()
+
+	return responses.NewUser(res), nil
+
 }
 
-// func (h *UserHandlerImpl) Create(param *entity.User) (presenter.Presenter, error) {
-// 	output, err := h.UserInteractor.Create(param)
-// 	if err != nil {
-// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// 		return nil, err
-// 	}
+func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 
-// 	return presenter.NewUserJSONPresenter(responses.NewUser(output)), nil
-// }
+	res, err := s.UserInteractor.GetById(uint(req.Id))
+	if err != nil {
+		return nil, handleError(err)
+	}
 
-// func (h *UserHandlerImpl) Update(param *entity.User) (presenter.Presenter, error) {
-// 	output, err := h.UserInteractor.Update(param)
-// 	if err != nil {
-// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// 		return nil, err
-// 	}
-
-// 	return presenter.NewUserJSONPresenter(responses.NewUser(output)), nil
-// }
-
-// // Get
-// func (h *UserHandlerImpl) GetById(id uint) (presenter.Presenter, error) {
-// 	output, err := h.UserInteractor.GetById(id)
-// 	if err != nil {
-// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// 		return nil, err
-// 	}
-
-// 	return presenter.NewUserJSONPresenter(responses.NewUser(output)), nil
-// }
-
-// func (h *UserHandlerImpl) SignIn(param *entity.SignInParam) (presenter.Presenter, error) {
-// 	output, err := h.UserInteractor.SignIn(param)
-// 	if err != nil {
-// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-// 		return nil, err
-// 	}
-
-// 	return presenter.NewUserJSONPresenter(responses.NewUser(output)), nil
-
-// }
+	return responses.NewUser(res), nil
+}

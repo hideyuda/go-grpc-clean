@@ -21,7 +21,7 @@ wire:
 
 .PHONY: run
 run:
-	export APP_ENV=local
+	# export APP_ENV=local
 	air -c .conf/.air.toml
 
 up:

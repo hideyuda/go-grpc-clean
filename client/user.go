@@ -7,6 +7,7 @@ import (
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -14,12 +15,8 @@ import (
 type UserClientImpl struct {
 }
 
-func NewUserClientImpl() UserClient {
+func NewUserClientImpl() usecase.UserClient {
 	return &UserClientImpl{}
-}
-
-type UserClient interface {
-	DetectTextFromImage()
 }
 
 func (r *UserClientImpl) DetectTextFromImage() {
@@ -29,7 +26,11 @@ func (r *UserClientImpl) DetectTextFromImage() {
 	)
 
 	// Set up a connection to the server.
-	conn, err = grpc.Dial(config.App.PythonDomain, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.Dial(
+		config.App.PythonDomain,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

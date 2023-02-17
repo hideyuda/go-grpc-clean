@@ -3,12 +3,14 @@ package config
 import "github.com/kelseyhightower/envconfig"
 
 type Config struct {
-	App      AppObj      `required:"true" envconfig:"APP"`
-	Db       DbObj       `required:"true" envconfig:"Db"`
-	Firebase FirebaseObj `required:"true" envconfig:"FIREBASE"`
-	Sendgrid SendgridObj `required:"true" envconfig:"SENDGRID"`
-	Slack    SlackObj    `required:"true" envconfig:"SLACK"`
-	Google   GoogleObj   `required:"true" envconfig:"GOOGLE"`
+	App         AppObj         `required:"true" envconfig:"APP"`
+	Db          DbObj          `required:"true" envconfig:"Db"`
+	Firebase    FirebaseObj    `required:"true" envconfig:"FIREBASE"`
+	Sendgrid    SendgridObj    `required:"true" envconfig:"SENDGRID"`
+	Slack       SlackObj       `required:"true" envconfig:"SLACK"`
+	Google      GoogleObj      `required:"true" envconfig:"GOOGLE"`
+	ChatGpt     ChatGptObj     `required:"true" envconfig:"CHAT_GPT"`
+	UberSuggest UberSuggestObj `required:"true" envconfig:"UBER_SUGGEST"`
 }
 
 func New() (Config, error) {
@@ -95,13 +97,24 @@ type GoogleObj struct {
 	ApplicationCredentials string `required:"true" split_words:"true"`
 }
 
+type ChatGptObj struct {
+	SecretKey string `required:"true" split_words:"true"`
+}
+
+type UberSuggestObj struct {
+	Email    string `required:"true" split_words:"true"`
+	Password string `required:"true" split_words:"true"`
+}
+
 var (
-	App      AppObj
-	Db       DbObj
-	Firebase FirebaseObj
-	Sendgrid SendgridObj
-	Slack    SlackObj
-	Google   GoogleObj
+	App         AppObj
+	Db          DbObj
+	Firebase    FirebaseObj
+	Sendgrid    SendgridObj
+	Slack       SlackObj
+	Google      GoogleObj
+	ChatGpt     ChatGptObj
+	UberSuggest UberSuggestObj
 )
 
 // var (
