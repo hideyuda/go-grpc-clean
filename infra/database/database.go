@@ -19,7 +19,6 @@ import (
 )
 
 // DB is a db instance which implement of interfaces.SQL
-//
 type Db struct {
 	db          *sqlx.DB
 	printsQuery bool
@@ -35,7 +34,7 @@ func NewDb() *Db {
 	)
 
 	// 本番環境の場合は、CloudSQLにUnix接続する
-	if config.Db.InstanceUnixSocket != "" {
+	if config.App.Env == "prd" || config.App.Env == "dev" {
 		url = fmt.Sprintf("%s:%s@unix(/%s)/%s?parseTime=true&charset=utf8mb4&collation=utf8mb4_general_ci",
 			config.Db.User,
 			config.Db.Pass,
@@ -205,7 +204,6 @@ func (d *Db) MigrateDown(dir string) error {
 }
 
 // Tx is a transactional db instance which implement of interfaces.SQL
-//
 type Tx struct {
 	tx          *sqlx.Tx
 	printsQuery bool

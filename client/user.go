@@ -1,4 +1,4 @@
-package request
+package client
 
 import (
 	"context"
@@ -7,29 +7,30 @@ import (
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type UserRequestImpl struct {
+type UserClientImpl struct {
 }
 
-func NewUserRequestImpl() UserRequest {
-	return &UserRequestImpl{}
+func NewUserClientImpl() usecase.UserClient {
+	return &UserClientImpl{}
 }
 
-type UserRequest interface {
-	DetectTextFromImage()
-}
-
-func (r *UserRequestImpl) DetectTextFromImage() {
+func (r *UserClientImpl) DetectTextFromImage() {
 	var (
 		conn *grpc.ClientConn
 		err  error
 	)
 
 	// Set up a connection to the server.
-	conn, err = grpc.Dial(config.App.PythonDomain, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.Dial(
+		config.App.PythonDomain,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -40,7 +41,7 @@ func (r *UserRequestImpl) DetectTextFromImage() {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	req, err := c.CreateUser(ctx, &pb.User{Name: "name", Email: "email", Password: "password"})
+	req, err := c.Create(ctx, &pb.User{Name: "name", Email: "email", Password: "password"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}

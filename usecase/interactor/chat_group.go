@@ -41,12 +41,9 @@ func NewChatGroupInteractorImpl(
 }
 
 func (i *ChatGroupInteractorImpl) Create(chatGroup *entity.ChatGroup) (*entity.ChatGroup, error) {
-	var (
-		err error
-	)
 
 	// ユーザー登録
-	err = i.chatGroupRepository.Create(chatGroup)
+	err := i.chatGroupRepository.Create(chatGroup)
 	if err != nil {
 		return chatGroup, err
 	}
@@ -55,12 +52,9 @@ func (i *ChatGroupInteractorImpl) Create(chatGroup *entity.ChatGroup) (*entity.C
 }
 
 func (i *ChatGroupInteractorImpl) Update(chatGroup *entity.ChatGroup) (*entity.ChatGroup, error) {
-	var (
-		err error
-	)
 
 	// ユーザー登録
-	err = i.chatGroupRepository.Update(chatGroup)
+	err := i.chatGroupRepository.Update(chatGroup)
 	if err != nil {
 		return chatGroup, err
 	}

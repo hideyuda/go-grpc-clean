@@ -2,6 +2,7 @@ OS=linux
 ARCH=amd64
 ROOT=$(GOPATH)/src/github.com/hidenari-yuda/go-docker-template
 
+.PHONY: setup build wire run up down enc-envfile migrate-new migrate-up migrate-down test test-all repository-test entity-test mock repository-mock interactor-mock driver-mock usecase-mock
 setup:
 	go install -v github.com/google/wire/cmd/wire@v0.5.0
 	go install -v github.com/rubenv/sql-migrate/sql-migrate@v1.1.2
@@ -9,15 +10,18 @@ setup:
 	go install -v github.com/cosmtrek/air@v1.40.4
 	make mock
 
+.PHONY: build go
 build:
 	go mod tidy
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/app
 
+.PHONY: wire
 wire:
 	wire ./infra/di/wire.go
 
+.PHONY: run
 run:
-	export APP_ENV=local
+	# export APP_ENV=local
 	air -c .conf/.air.toml
 
 up:

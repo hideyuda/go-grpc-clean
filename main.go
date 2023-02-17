@@ -7,15 +7,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/utility"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
+	"github.com/hidenari-yuda/go-grpc-clean/handler"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
-	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
-	"github.com/hidenari-yuda/go-grpc-clean/infra/router"
 
-	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/slack-go/slack"
@@ -23,7 +20,7 @@ import (
 
 func init() {
 
-	time.Local = utility.Tokyo
+	time.Local = utils.Tokyo
 
 	if err := godotenv.Load(); err != nil {
 		panic("Failed to load .env file")
@@ -41,7 +38,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	utility.LoggingSettings(config.App.LogFilePath)
+	utils.LoggingSettings(config.App.LogFilePath)
 	log.Println(fmt.Sprint("Server is running on port: ", config.App.Port))
 
 	// ctx := context.Background()
@@ -55,43 +52,34 @@ func main() {
 			fmt.Println(err)
 		}
 		// cache := driver.NewRedisCacheImpl(cfg.Redis)
-		if cfg.App.Env == "local" {
-			firebase := driver.NewFirebaseImpl()
-			fmt.Println("getTestUserToken:", uuid.New().String())
-			getTestUserToken(firebase, uuid.New().String())
-		}
-		r := router.NewRouter(cfg)
+		// if cfg.App.Env == "local" {
+		// 	firebase := driver.NewFirebaseImpl()
+		// 	fmt.Println("getTestUserToken:", uuid.New().String())
+		// 	getTestUserToken(firebase, uuid.New().String())
+		// }
+		r := handler.NewRouter(cfg)
 
 		// // エラーハンドラー（dev or prdのみSlack通知）
-		if cfg.App.Env != "local" {
-			r.Engine.HTTPErrorHandler = customHTTPErrorHandler
-		}
+		// if cfg.App.Env != "local" {
+		// 	r.Engine.HTTPErrorHandler = customHTTPErrorHandler
+		// }
 
 		// ルーティング
-		r.SetUp().Start()
+		r.Start()
 
 		// case "batch":
 		// 	batch.NewBatch(cfg).Start()
 	}
 }
 
-// func register(ctx context.Context, s *grpc.Server) {
-// 	// c := infra.NewFirestoreClient(ctx)
-// 	// repo := infra.NewMessageRepositoryImpl(c)
-// 	repo := infra.NewLocalMessageRepositoryImpl()
-// 	createMessageService := usecase.NewCreateMessageService(repo)
-// 	getMessageService := usecase.NewGetMessageStreamService(repo)
-// 	pb.RegisterChatServiceServer(s, NewServer(*createMessageService, *getMessageService))
+// func getTestUserToken(fb usecase.Firebase, uuid string) {
+// 	customToken, _ := fb.GetCustomToken(uuid)
+// 	idToken, err := fb.GetIDToken(customToken)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	fmt.Println("test token is :", idToken)
 // }
-
-func getTestUserToken(fb usecase.Firebase, uuid string) {
-	customToken, _ := fb.GetCustomToken(uuid)
-	idToken, err := fb.GetIDToken(customToken)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("test token is :", idToken)
-}
 
 func customHTTPErrorHandler(err error, c echo.Context) {
 	var (

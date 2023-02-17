@@ -22,11 +22,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatServiceClient interface {
-	CreateChat(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error)
-	UpdateChat(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error)
+	Create(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error)
+	Update(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error)
 	// Get
-	GetChatById(ctx context.Context, in *GetChatByIdRequest, opts ...grpc.CallOption) (*ChatResponse, error)
-	GetChatStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (ChatService_GetChatStreamClient, error)
+	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ChatResponse, error)
+	GetStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (ChatService_GetStreamClient, error)
 }
 
 type chatServiceClient struct {
@@ -37,39 +37,39 @@ func NewChatServiceClient(cc grpc.ClientConnInterface) ChatServiceClient {
 	return &chatServiceClient{cc}
 }
 
-func (c *chatServiceClient) CreateChat(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error) {
+func (c *chatServiceClient) Create(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error) {
 	out := new(ChatResponse)
-	err := c.cc.Invoke(ctx, "/chat.ChatService/CreateChat", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chat.ChatService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatServiceClient) UpdateChat(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error) {
+func (c *chatServiceClient) Update(ctx context.Context, in *Chat, opts ...grpc.CallOption) (*ChatResponse, error) {
 	out := new(ChatResponse)
-	err := c.cc.Invoke(ctx, "/chat.ChatService/UpdateChat", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chat.ChatService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatServiceClient) GetChatById(ctx context.Context, in *GetChatByIdRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
+func (c *chatServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
 	out := new(ChatResponse)
-	err := c.cc.Invoke(ctx, "/chat.ChatService/GetChatById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chat.ChatService/GetById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatServiceClient) GetChatStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (ChatService_GetChatStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], "/chat.ChatService/GetChatStream", opts...)
+func (c *chatServiceClient) GetStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (ChatService_GetStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], "/chat.ChatService/GetStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &chatServiceGetChatStreamClient{stream}
+	x := &chatServiceGetStreamClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -79,16 +79,16 @@ func (c *chatServiceClient) GetChatStream(ctx context.Context, in *GetStreamRequ
 	return x, nil
 }
 
-type ChatService_GetChatStreamClient interface {
+type ChatService_GetStreamClient interface {
 	Recv() (*ChatResponse, error)
 	grpc.ClientStream
 }
 
-type chatServiceGetChatStreamClient struct {
+type chatServiceGetStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *chatServiceGetChatStreamClient) Recv() (*ChatResponse, error) {
+func (x *chatServiceGetStreamClient) Recv() (*ChatResponse, error) {
 	m := new(ChatResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -100,11 +100,11 @@ func (x *chatServiceGetChatStreamClient) Recv() (*ChatResponse, error) {
 // All implementations must embed UnimplementedChatServiceServer
 // for forward compatibility
 type ChatServiceServer interface {
-	CreateChat(context.Context, *Chat) (*ChatResponse, error)
-	UpdateChat(context.Context, *Chat) (*ChatResponse, error)
+	Create(context.Context, *Chat) (*ChatResponse, error)
+	Update(context.Context, *Chat) (*ChatResponse, error)
 	// Get
-	GetChatById(context.Context, *GetChatByIdRequest) (*ChatResponse, error)
-	GetChatStream(*GetStreamRequest, ChatService_GetChatStreamServer) error
+	GetById(context.Context, *GetByIdRequest) (*ChatResponse, error)
+	GetStream(*GetStreamRequest, ChatService_GetStreamServer) error
 	mustEmbedUnimplementedChatServiceServer()
 }
 
@@ -112,17 +112,17 @@ type ChatServiceServer interface {
 type UnimplementedChatServiceServer struct {
 }
 
-func (UnimplementedChatServiceServer) CreateChat(context.Context, *Chat) (*ChatResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateChat not implemented")
+func (UnimplementedChatServiceServer) Create(context.Context, *Chat) (*ChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedChatServiceServer) UpdateChat(context.Context, *Chat) (*ChatResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateChat not implemented")
+func (UnimplementedChatServiceServer) Update(context.Context, *Chat) (*ChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedChatServiceServer) GetChatById(context.Context, *GetChatByIdRequest) (*ChatResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetChatById not implemented")
+func (UnimplementedChatServiceServer) GetById(context.Context, *GetByIdRequest) (*ChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedChatServiceServer) GetChatStream(*GetStreamRequest, ChatService_GetChatStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetChatStream not implemented")
+func (UnimplementedChatServiceServer) GetStream(*GetStreamRequest, ChatService_GetStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetStream not implemented")
 }
 func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
 
@@ -137,78 +137,78 @@ func RegisterChatServiceServer(s grpc.ServiceRegistrar, srv ChatServiceServer) {
 	s.RegisterService(&ChatService_ServiceDesc, srv)
 }
 
-func _ChatService_CreateChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ChatService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Chat)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).CreateChat(ctx, in)
+		return srv.(ChatServiceServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chat.ChatService/CreateChat",
+		FullMethod: "/chat.ChatService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).CreateChat(ctx, req.(*Chat))
+		return srv.(ChatServiceServer).Create(ctx, req.(*Chat))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatService_UpdateChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ChatService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Chat)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).UpdateChat(ctx, in)
+		return srv.(ChatServiceServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chat.ChatService/UpdateChat",
+		FullMethod: "/chat.ChatService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).UpdateChat(ctx, req.(*Chat))
+		return srv.(ChatServiceServer).Update(ctx, req.(*Chat))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatService_GetChatById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetChatByIdRequest)
+func _ChatService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).GetChatById(ctx, in)
+		return srv.(ChatServiceServer).GetById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chat.ChatService/GetChatById",
+		FullMethod: "/chat.ChatService/GetById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).GetChatById(ctx, req.(*GetChatByIdRequest))
+		return srv.(ChatServiceServer).GetById(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatService_GetChatStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _ChatService_GetStream_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(GetStreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ChatServiceServer).GetChatStream(m, &chatServiceGetChatStreamServer{stream})
+	return srv.(ChatServiceServer).GetStream(m, &chatServiceGetStreamServer{stream})
 }
 
-type ChatService_GetChatStreamServer interface {
+type ChatService_GetStreamServer interface {
 	Send(*ChatResponse) error
 	grpc.ServerStream
 }
 
-type chatServiceGetChatStreamServer struct {
+type chatServiceGetStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *chatServiceGetChatStreamServer) Send(m *ChatResponse) error {
+func (x *chatServiceGetStreamServer) Send(m *ChatResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -220,22 +220,22 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChatServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateChat",
-			Handler:    _ChatService_CreateChat_Handler,
+			MethodName: "Create",
+			Handler:    _ChatService_Create_Handler,
 		},
 		{
-			MethodName: "UpdateChat",
-			Handler:    _ChatService_UpdateChat_Handler,
+			MethodName: "Update",
+			Handler:    _ChatService_Update_Handler,
 		},
 		{
-			MethodName: "GetChatById",
-			Handler:    _ChatService_GetChatById_Handler,
+			MethodName: "GetById",
+			Handler:    _ChatService_GetById_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "GetChatStream",
-			Handler:       _ChatService_GetChatStream_Handler,
+			StreamName:    "GetStream",
+			Handler:       _ChatService_GetStream_Handler,
 			ServerStreams: true,
 		},
 	},

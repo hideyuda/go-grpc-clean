@@ -1,4 +1,4 @@
-package utility
+package utils
 
 import (
 	sendgrid "github.com/sendgrid/sendgrid-go"
