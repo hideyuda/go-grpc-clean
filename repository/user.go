@@ -46,7 +46,7 @@ func (r *UserRepositoryImpl) Create(param *entity.User) error {
 				?,
 				?
 		)`,
-		utils.CreateUUID(),
+		utils.CreateUuid(),
 		param.FirebaseId,
 		param.Name,
 		param.Email,

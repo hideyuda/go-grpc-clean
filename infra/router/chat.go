@@ -13,7 +13,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
-func (s *ServiceServer) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
+func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
 
 	// Convert context.Context to echo.Context in gRPC server
 
@@ -48,7 +48,7 @@ func (s *ServiceServer) CreateChat(ctx context.Context, req *pb.Chat) (*pb.ChatR
 	}, nil
 }
 
-func (s *ServiceServer) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.ChatResponse, error) {
+func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.GetByIdRequest) (*pb.ChatResponse, error) {
 	fmt.Println("Get")
 
 	// var (
@@ -57,7 +57,7 @@ func (s *ServiceServer) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.C
 	// )
 
 	i := di.InitializeChatInteractor(s.Db, s.Firebase)
-	res, err := i.GetById(uint(req.Chat.Id))
+	res, err := i.GetById(uint(req.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (s *ServiceServer) GetChat(ctx context.Context, req *pb.ChatRequest) (*pb.C
 	}, nil
 }
 
-func (s *ServiceServer) GetChatStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer) error {
+func (s *ChatServiceServer) GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetStreamServer) error {
 	fmt.Println("GetStream")
 	// h := di.InitializeChatHandler(s.Db, s.Firebase)
 	// err := h.GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer)

@@ -75,15 +75,6 @@ func main() {
 	}
 }
 
-// func register(ctx context.Context, s *grpc.Server) {
-// 	// c := infra.NewFirestoreClient(ctx)
-// 	// repo := infra.NewMessageRepositoryImpl(c)
-// 	repo := infra.NewLocalMessageRepositoryImpl()
-// 	createMessageService := usecase.NewCreateMessageService(repo)
-// 	getMessageService := usecase.NewGetMessageStreamService(repo)
-// 	pb.RegisterChatServiceServer(s, NewServer(*createMessageService, *getMessageService))
-// }
-
 func getTestUserToken(fb usecase.Firebase, uuid string) {
 	customToken, _ := fb.GetCustomToken(uuid)
 	idToken, err := fb.GetIDToken(customToken)

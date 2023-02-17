@@ -38,7 +38,7 @@ func (r *ChatRepositoryImpl) Create(param *entity.Chat) error {
 				?, 
 				?
 		)`,
-		utils.CreateUUID(),
+		utils.CreateUuid(),
 		param.Content,
 		now,
 		now,

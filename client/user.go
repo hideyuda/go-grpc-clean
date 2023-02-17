@@ -40,7 +40,7 @@ func (r *UserClientImpl) DetectTextFromImage() {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	req, err := c.CreateUser(ctx, &pb.User{Name: "name", Email: "email", Password: "password"})
+	req, err := c.Create(ctx, &pb.User{Name: "name", Email: "email", Password: "password"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}

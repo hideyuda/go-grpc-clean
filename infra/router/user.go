@@ -4,33 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/requests"
+	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
 
 	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
-func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserResponse, error) {
-
-	// Convert context.Context to echo.Context in gRPC server
-
-	fmt.Println("Create")
-
-	// var (
-	// 	db       = database.NewDb()
-	// 	firebase = driver.NewFirebaseImpl()
-	// )
-
-	input := &entity.User{
-		Name:      req.Name,
-		Email:     req.Email,
-		Password:  req.Password,
-		CreatedAt: req.CreatedAt.AsTime(),
-	}
+func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.UserResponse, error) {
 
 	fmt.Println("db is:", s.Db)
 	fmt.Println("firebase is :", s.Firebase)
+
+	input, err := requests.NewUser(req)
+	if err != nil {
+		return nil, err
+	}
 
 	tx, _ := s.Db.Begin()
 	i := di.InitializeUserInteractor(tx, s.Firebase)
@@ -39,22 +28,14 @@ func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.User) (*pb.UserR
 		tx.Rollback()
 		return nil, err
 	}
+
 	tx.Commit()
 
-	return &pb.UserResponse{
-		Error: false,
-		User: &pb.User{
-			Id:        uint32(res.Id),
-			Name:      res.Name,
-			Email:     res.Email,
-			Password:  res.Password,
-			CreatedAt: timestamppb.New(res.CreatedAt),
-		},
-	}, nil
+	return responses.NewUser(res), nil
+
 }
 
-func (s *ServiceServer) GetUserById(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
-	fmt.Println("Get")
+func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 
 	i := di.InitializeUserInteractor(s.Db, s.Firebase)
 	res, err := i.GetById(uint(req.Id))
@@ -62,14 +43,5 @@ func (s *ServiceServer) GetUserById(ctx context.Context, req *pb.UserRequest) (*
 		return nil, err
 	}
 
-	return &pb.UserResponse{
-		Error: false,
-		User: &pb.User{
-			Id:        uint32(res.Id),
-			Name:      res.Name,
-			Email:     res.Email,
-			Password:  res.Password,
-			CreatedAt: timestamppb.New(res.CreatedAt),
-		},
-	}, nil
+	return responses.NewUser(res), nil
 }

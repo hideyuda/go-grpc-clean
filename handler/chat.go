@@ -1,23 +1,17 @@
 package handler
 
 import (
-	"context"
-
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/presenter"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
-
 	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 )
 
 type ChatHandler interface {
-	// Gest API
-	Create(param *entity.Chat) (presenter.Presenter, error)
-	// Update(param *entity.Chat) (presenter.Presenter, error)
+	// // Gest API
+	// Create(param *entity.Chat) (presenter.Presenter, error)
+	// // Update(param *entity.Chat) (presenter.Presenter, error)
 
-	// Get
-	GetById(id uint) (presenter.Presenter, error)
-	GetStream(ctx context.Context, stream chan<- entity.Chat) error
+	// // Get
+	// GetById(id uint) (presenter.Presenter, error)
+	// GetStream(ctx context.Context, stream chan<- entity.Chat) error
 }
 
 type ChatHandlerImpl struct {
@@ -30,18 +24,8 @@ func NewChatHandlerImpl(ui interactor.ChatInteractor) ChatHandler {
 	}
 }
 
-func (h *ChatHandlerImpl) Create(param *entity.Chat) (presenter.Presenter, error) {
-	output, err := h.ChatInteractor.Create(param)
-	if err != nil {
-		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-		return nil, err
-	}
-
-	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
-}
-
-// func (h *ChatHandlerImpl) Update(param *entity.Chat) (presenter.Presenter, error) {
-// 	output, err := h.ChatInteractor.Update(param)
+// func (h *ChatHandlerImpl) Create(param *entity.Chat) (presenter.Presenter, error) {
+// 	output, err := h.ChatInteractor.Create(param)
 // 	if err != nil {
 // 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
 // 		return nil, err
@@ -50,22 +34,32 @@ func (h *ChatHandlerImpl) Create(param *entity.Chat) (presenter.Presenter, error
 // 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
 // }
 
-// Get
-func (h *ChatHandlerImpl) GetById(id uint) (presenter.Presenter, error) {
-	output, err := h.ChatInteractor.GetById(id)
-	if err != nil {
-		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
-		return nil, err
-	}
+// // func (h *ChatHandlerImpl) Update(param *entity.Chat) (presenter.Presenter, error) {
+// // 	output, err := h.ChatInteractor.Update(param)
+// // 	if err != nil {
+// // 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
+// // 		return nil, err
+// // 	}
 
-	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
-}
+// // 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
+// // }
 
-func (h *ChatHandlerImpl) GetStream(ctx context.Context, stream chan<- entity.Chat) error {
-	err := h.ChatInteractor.GetStream(ctx, stream)
-	if err != nil {
-		return err
-	}
+// // Get
+// func (h *ChatHandlerImpl) GetById(id uint) (presenter.Presenter, error) {
+// 	output, err := h.ChatInteractor.GetById(id)
+// 	if err != nil {
+// 		// c.JSON(c, presenter.NewErrorJsonPresenter(err))
+// 		return nil, err
+// 	}
 
-	return nil
-}
+// 	return presenter.NewChatJSONPresenter(responses.NewChat(output)), nil
+// }
+
+// func (h *ChatHandlerImpl) GetStream(ctx context.Context, stream chan<- entity.Chat) error {
+// 	err := h.ChatInteractor.GetStream(ctx, stream)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

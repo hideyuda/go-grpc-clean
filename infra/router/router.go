@@ -1,14 +1,12 @@
 package router
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 
-	"github.com/hidenari-yuda/go-grpc-clean/repository"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 
@@ -22,10 +20,17 @@ import (
 )
 
 // server is used to implement helloworld.GreeterServer.
-type ServiceServer struct {
+type UserServiceServer struct {
 	pb.UnimplementedUserServiceServer
-	pb.UnimplementedChatServiceServer
+	// pb.UnimplementedChatServiceServer
 	UserInteractor interactor.UserInteractor
+	// ChatInteractor interactor.ChatInteractor
+	Db       *database.Db
+	Firebase usecase.Firebase
+}
+
+type ChatServiceServer struct {
+	pb.UnimplementedChatServiceServer
 	ChatInteractor interactor.ChatInteractor
 	Db             *database.Db
 	Firebase       usecase.Firebase
@@ -43,14 +48,6 @@ type ServiceServer struct {
 // 	maxRetryRPCBufferSize int
 // }
 
-// func NewSercviceServer(userHandler handler.UserHandlerImpl, handlerChatHandler handler.ChatHandler) *ServiceServer {
-// 	return &ServiceServer{
-// 		UserInteractor: userInteractorImpl,
-// 		Db:             database.NewDb(),
-// 		Firebase:       driver.NewFirebaseImpl(),
-// 	}
-// }
-
 // CallOption configures a Call before it starts or extracts information from
 // a Call after it completes.
 // type CallOption interface {
@@ -62,35 +59,6 @@ type ServiceServer struct {
 // 	// error, so any failures should be reported via output parameters.
 // 	after(*callInfo, *csAttempt)
 // }
-
-func NewUserSercviceServer(userInteractor interactor.UserInteractor) *ServiceServer {
-	return &ServiceServer{
-		UserInteractor: userInteractor,
-		Db:             database.NewDb(),
-		Firebase:       driver.NewFirebaseImpl(),
-	}
-}
-
-func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ServiceServer {
-	return &ServiceServer{
-		ChatInteractor: chatInteractor,
-		Db:             database.NewDb(),
-		Firebase:       driver.NewFirebaseImpl(),
-	}
-}
-
-func register(ctx context.Context, s *grpc.Server) {
-	var (
-		db       = database.NewDb()
-		firebase = driver.NewFirebaseImpl()
-	)
-	userRepository := repository.NewUserRepositoryImpl(db)
-	chatRepository := repository.NewChatRepositoryImpl(db)
-	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
-	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
-	pb.RegisterUserServiceServer(s, NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
-	pb.RegisterChatServiceServer(s, NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository, chatGroupRepository, chatUserRepository)))
-}
 
 type Router struct {
 	cfg    config.Config
@@ -109,6 +77,7 @@ func (r *Router) SetUp() *Router {
 		db       = database.NewDb()
 		firebase = driver.NewFirebaseImpl()
 	)
+
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.App.Port))
 	if err != nil {
 		panic(err)
@@ -116,16 +85,20 @@ func (r *Router) SetUp() *Router {
 
 	s := grpc.NewServer()
 
+	// ctx := context.Background()
 	// register(ctx, s)
 
-	// https://zenn.dev/hsaki/books/golang-grpc-starting/viewer/server#%5B%E3%82%B3%E3%83%A9%E3%83%A0%5D%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AA%E3%83%95%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%81%AF%EF%BC%9F
+	// ref:https://zenn.dev/hsaki/books/golang-grpc-starting/viewer/server#%5B%E3%82%B3%E3%83%A9%E3%83%A0%5D%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%83%AA%E3%83%95%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%81%AF%EF%BC%9F
 	reflection.Register(s)
 
-	pb.RegisterUserServiceServer(s, &ServiceServer{
+	// user
+	pb.RegisterUserServiceServer(s, &UserServiceServer{
 		Db:       db,
 		Firebase: firebase,
 	})
-	pb.RegisterChatServiceServer(s, &ServiceServer{
+
+	// chat
+	pb.RegisterChatServiceServer(s, &ChatServiceServer{
 		Db:       db,
 		Firebase: firebase,
 	})
@@ -142,129 +115,158 @@ func (r *Router) SetUp() *Router {
 	s.GracefulStop()
 
 	return r
-
-	// var (
-	// db       = database.NewDB(r.cfg.Db, true)
-	// firebase = driver.NewFirebaseImpl(r.cfg.Firebase)
-	// basicAuth = utils.NewBasicAuth(r.cfg)
-	// )
-
-	// r.Engine.HidePort = true
-	// r.Engine.HideBanner = true
-	// r.Engine.Use(middleware.Recover())
-	// // TODO: Webクライアントのドメインが決まったら設定する 👆の`r.Engine.Use(middleware.CORS())`は消す
-	// // r.Engine.Use(middleware.CORSWithConfig((middleware.CORSConfig{
-	// // AllowOrigins: r.cfg.App.CorsDomains,
-	// // 	AllowHeaders: []string{echo.HeaderAuthorization, echo.HeaderContentType, echo.HeaderOrigin, echo.HeaderAccessControlAllowOrigin},
-	// // 	AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
-	// // })))
-	// r.Engine.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-	// 	AllowOrigins: []string{"*"},
-	// 	AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
-	// }))
-	// r.Engine.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	// 	Skipper: func(c echo.Context) bool {
-	// 		if strings.Contains(c.Request().URL.Path, "healthz") {
-	// 			return true
-	// 		} else {
-	// 			return false
-	// 		}
-	// 	},
-	// }))
-	// r.Engine.HidePort = true
-	// r.Engine.HideBanner = true
-	// r.Engine.Use(middleware.Recover())
-
-	// var origins []string
-
-	// if r.cfg.App.Env == "local" {
-	// 	origins = []string{
-	// 		"http://localhost:9090",
-	// 		"http://localhost:3000",
-	// 		"http://localhost:3001",
-	// 		"http://localhost:3002",
-	// 	}
-	// } else if r.cfg.App.Env == "dev" {
-	// 	origins = r.cfg.App.CorsDomains
-	// } else if r.cfg.App.Env == "prd" {
-	// 	origins = r.cfg.App.CorsDomains
-	// }
-
-	// fmt.Println("------------")
-	// fmt.Println(r.cfg.App.Env)
-	// fmt.Println(origins)
-	// fmt.Println("------------")
-
-	// r.Engine.Use(middleware.CORSWithConfig((middleware.CORSConfig{
-	// 	AllowOrigins: origins,
-	// 	AllowHeaders: []string{
-	// 		echo.HeaderAuthorization,
-	// 		echo.HeaderAccessControlAllowHeaders,
-	// 		echo.HeaderContentType,
-	// 		echo.HeaderOrigin,
-	// 		echo.HeaderAccessControlAllowOrigin,
-	// 		"FirebaseAuthorization",
-	// 	},
-	// 	AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
-	// })))
-
-	// r.Engine.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	// 	Skipper: func(c echo.Context) bool {
-	// 		if strings.Contains(c.Request().URL.Path, "healthz") {
-	// 			return true
-	// 		} else {
-	// 			return false
-	// 		}
-	// 	},
-	// }))
-
-	// api := r.Engine.Group("")
-	// {
-	// 	api.GET("/healthz", func(c echo.Context) error {
-	// 		return c.NoContent(http.StatusOK)
-	// 	})
-
-	// 	api.GET("/*", func(c echo.Context) error {
-	// 		return c.NoContent(http.StatusNotFound)
-	// 	})
-
-	// 	api.POST("/*", func(c echo.Context) error {
-	// 		return c.NoContent(http.StatusNotFound)
-	// 	})
-
-	// 	api.PUT("/*", func(c echo.Context) error {
-	// 		return c.NoContent(http.StatusNotFound)
-	// 	})
-	// }
-
-	// /****************************************************************************************/
-	// /// No Auth API
-	// //
-
-	// noAuthAPI := api.Group("api")
-	// {
-	// 	noAuthAPI.GET("/healthz", func(c echo.Context) error {
-	// 		return c.NoContent(http.StatusOK)
-	// 	})
-
-	// 	// ユーザーの新規登録
-	// 	noAuthAPI.POST("/signup", userRoutes.SignUp(db, firebase))
-
-	// 	// ユーザーのログイン
-	// 	noAuthAPI.PUT("/signin", userRoutes.SignIn(db, firebase))
-
-	// }
-
-	// /****************************************************************************************/
-	// /// UserAPI
-	// //
-	// // userAPI := noAuthAPI.Group("/user")
-	// {
-	// 	// ユーザーのログイン
-
-	// }
 }
 
 func (r *Router) Start() {
 	r.Engine.Start(fmt.Sprintf(":%d", config.App.Port))
 }
+
+// func NewUserSercviceServer(userInteractor interactor.UserInteractor) *ServiceServer {
+// 	return &ServiceServer{
+// 		UserInteractor: userInteractor,
+// 		Db:             database.NewDb(),
+// 		Firebase:       driver.NewFirebaseImpl(),
+// 	}
+// }
+
+// func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ServiceServer {
+// 	return &ServiceServer{
+// 		ChatInteractor: chatInteractor,
+// 		Db:             database.NewDb(),
+// 		Firebase:       driver.NewFirebaseImpl(),
+// 	}
+// }
+
+// func register(ctx context.Context, s *grpc.Server) {
+// 	var (
+// 		db       = database.NewDb()
+// 		firebase = driver.NewFirebaseImpl()
+// 	)
+// 	userRepository := repository.NewUserRepositoryImpl(db)
+// 	chatRepository := repository.NewChatRepositoryImpl(db)
+// 	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
+// 	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
+// 	pb.RegisterUserServiceServer(s, NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
+// 	pb.RegisterChatServiceServer(s, NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository, chatGroupRepository, chatUserRepository)))
+// }
+
+// var (
+// db       = database.NewDB(r.cfg.Db, true)
+// firebase = driver.NewFirebaseImpl(r.cfg.Firebase)
+// basicAuth = utils.NewBasicAuth(r.cfg)
+// )
+
+// r.Engine.HidePort = true
+// r.Engine.HideBanner = true
+// r.Engine.Use(middleware.Recover())
+// // TODO: Webクライアントのドメインが決まったら設定する 👆の`r.Engine.Use(middleware.CORS())`は消す
+// // r.Engine.Use(middleware.CORSWithConfig((middleware.CORSConfig{
+// // AllowOrigins: r.cfg.App.CorsDomains,
+// // 	AllowHeaders: []string{echo.HeaderAuthorization, echo.HeaderContentType, echo.HeaderOrigin, echo.HeaderAccessControlAllowOrigin},
+// // 	AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+// // })))
+// r.Engine.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+// 	AllowOrigins: []string{"*"},
+// 	AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
+// }))
+// r.Engine.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+// 	Skipper: func(c echo.Context) bool {
+// 		if strings.Contains(c.Request().URL.Path, "healthz") {
+// 			return true
+// 		} else {
+// 			return false
+// 		}
+// 	},
+// }))
+// r.Engine.HidePort = true
+// r.Engine.HideBanner = true
+// r.Engine.Use(middleware.Recover())
+
+// var origins []string
+
+// if r.cfg.App.Env == "local" {
+// 	origins = []string{
+// 		"http://localhost:9090",
+// 		"http://localhost:3000",
+// 		"http://localhost:3001",
+// 		"http://localhost:3002",
+// 	}
+// } else if r.cfg.App.Env == "dev" {
+// 	origins = r.cfg.App.CorsDomains
+// } else if r.cfg.App.Env == "prd" {
+// 	origins = r.cfg.App.CorsDomains
+// }
+
+// fmt.Println("------------")
+// fmt.Println(r.cfg.App.Env)
+// fmt.Println(origins)
+// fmt.Println("------------")
+
+// r.Engine.Use(middleware.CORSWithConfig((middleware.CORSConfig{
+// 	AllowOrigins: origins,
+// 	AllowHeaders: []string{
+// 		echo.HeaderAuthorization,
+// 		echo.HeaderAccessControlAllowHeaders,
+// 		echo.HeaderContentType,
+// 		echo.HeaderOrigin,
+// 		echo.HeaderAccessControlAllowOrigin,
+// 		"FirebaseAuthorization",
+// 	},
+// 	AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
+// })))
+
+// r.Engine.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+// 	Skipper: func(c echo.Context) bool {
+// 		if strings.Contains(c.Request().URL.Path, "healthz") {
+// 			return true
+// 		} else {
+// 			return false
+// 		}
+// 	},
+// }))
+
+// api := r.Engine.Group("")
+// {
+// 	api.GET("/healthz", func(c echo.Context) error {
+// 		return c.NoContent(http.StatusOK)
+// 	})
+
+// 	api.GET("/*", func(c echo.Context) error {
+// 		return c.NoContent(http.StatusNotFound)
+// 	})
+
+// 	api.POST("/*", func(c echo.Context) error {
+// 		return c.NoContent(http.StatusNotFound)
+// 	})
+
+// 	api.PUT("/*", func(c echo.Context) error {
+// 		return c.NoContent(http.StatusNotFound)
+// 	})
+// }
+
+// /****************************************************************************************/
+// /// No Auth API
+// //
+
+// noAuthAPI := api.Group("api")
+// {
+// 	noAuthAPI.GET("/healthz", func(c echo.Context) error {
+// 		return c.NoContent(http.StatusOK)
+// 	})
+
+// 	// ユーザーの新規登録
+// 	noAuthAPI.POST("/signup", userRoutes.SignUp(db, firebase))
+
+// 	// ユーザーのログイン
+// 	noAuthAPI.PUT("/signin", userRoutes.SignIn(db, firebase))
+
+// }
+
+// /****************************************************************************************/
+// /// UserAPI
+// //
+// // userAPI := noAuthAPI.Group("/user")
+// {
+// 	// ユーザーのログイン
+
+// }
