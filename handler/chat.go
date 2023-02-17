@@ -39,7 +39,7 @@ func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.ChatR
 	}, nil
 }
 
-func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.GetByIdRequest) (*pb.ChatResponse, error) {
+func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.GetChatByIdRequest) (*pb.ChatResponse, error) {
 	fmt.Println("Get")
 
 	// var (
@@ -62,7 +62,7 @@ func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.GetByIdRequest)
 	}, nil
 }
 
-func (s *ChatServiceServer) GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetStreamServer) error {
+func (s *ChatServiceServer) GetStream(req *pb.GetChatStreamRequest, server pb.ChatService_GetStreamServer) error {
 	fmt.Println("GetStream")
 	// h := di.InitializeChatHandler(s.Db, s.Firebase)
 	// err := h.GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer)

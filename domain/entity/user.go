@@ -13,7 +13,7 @@ type User struct {
 	Name       string    `db:"name" json:"name"`
 	Email      string    `db:"email" json:"email"`
 	Password   string    `db:"password" json:"password"`
-	UserType   uint      `db:"user_type" json:"user_type"` // 0: guest(default), 1: normal, 2: admin
+	UserType   uint      `db:"user_type" json:"user_type"` //NONE = 0; NORMAL = 1; ADMIN = 2; GUEST = 3; DISABLED = 4;
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
 
@@ -88,7 +88,9 @@ type Article struct {
 	UpdatedAt string `db:"updated_at" json:"updated_at"`
 	IsDeleted bool   `db:"is_deleted" json:"is_deleted"`
 
-	Paragraphs []Paragraph `db:"paragraphs" json:"paragraphs"`
+	Paragraphs  []Paragraph         `db:"paragraphs" json:"paragraphs"`
+	Tags        []Tag               `db:"tags" json:"tags"`
+	Competitors []ArticleCompetitor `db:"competitors" json:"competitors"`
 }
 
 type Paragraph struct {
@@ -97,6 +99,27 @@ type Paragraph struct {
 	ArticleId uint   `db:"article_id" json:"article_id"`
 	Headline  string `db:"headline" json:"headline"`
 	Content   string `db:"content" json:"content"`
+	CreatedAt string `db:"created_at" json:"created_at"`
+	UpdatedAt string `db:"updated_at" json:"updated_at"`
+	IsDeleted bool   `db:"is_deleted" json:"is_deleted"`
+}
+
+type Tag struct {
+	Id        uint   `db:"id" json:"id"`
+	Uuid      string `db:"uuid" json:"uuid"`
+	ArticleId uint   `db:"article_id" json:"article_id"`
+	Tag       string `db:"tag" json:"tag"`
+	CreatedAt string `db:"created_at" json:"created_at"`
+	UpdatedAt string `db:"updated_at" json:"updated_at"`
+	IsDeleted bool   `db:"is_deleted" json:"is_deleted"`
+}
+
+type ArticleCompetitor struct {
+	Id        uint   `db:"id" json:"id"`
+	Uuid      string `db:"uuid" json:"uuid"`
+	ArticleId uint   `db:"article_id" json:"article_id"`
+	Title     string `db:"title" json:"title"`
+	Url       string `db:"url" json:"url"`
 	CreatedAt string `db:"created_at" json:"created_at"`
 	UpdatedAt string `db:"updated_at" json:"updated_at"`
 	IsDeleted bool   `db:"is_deleted" json:"is_deleted"`
