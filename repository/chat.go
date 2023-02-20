@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
@@ -22,7 +22,7 @@ func NewChatRepositoryImpl(ex SQLExecuter) usecase.ChatRepository {
 }
 
 /***** Create *****/
-func (r *ChatRepositoryImpl) Create(param *entity.Chat) error {
+func (r *ChatRepositoryImpl) Create(param *pb.Chat) error {
 	now := time.Now()
 
 	_, err := r.executer.Exec(
@@ -67,7 +67,7 @@ func (r *ChatRepositoryImpl) Delete(id uint) error {
 }
 
 /***** Get *****/
-func (r *ChatRepositoryImpl) GetById(id uint) (Chat *entity.Chat, err error) {
+func (r *ChatRepositoryImpl) GetById(id uint) (Chat *pb.Chat, err error) {
 	err = r.executer.Get(
 		r.Name+"SignIn",
 		Chat,
@@ -83,9 +83,9 @@ func (r *ChatRepositoryImpl) GetById(id uint) (Chat *entity.Chat, err error) {
 }
 
 // getListByGroupId
-func (r *ChatRepositoryImpl) GetListByGroupId(groupId uint) ([]*entity.Chat, error) {
+func (r *ChatRepositoryImpl) GetListByGroupId(groupId uint) ([]*pb.Chat, error) {
 	var (
-		chats []*entity.Chat
+		chats []*pb.Chat
 	)
 	err := r.executer.Select(
 		r.Name+"GetListByGroupId",

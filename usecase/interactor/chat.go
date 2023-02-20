@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"golang.org/x/sync/errgroup"
 )
@@ -12,38 +12,38 @@ import (
 type ChatInteractor interface {
 	// Gest API
 	// Create
-	Create(Chat *entity.Chat) (*entity.Chat, error)
+	Create(Chat *pb.Chat) (*pb.Chat, error)
 
 	// Update
-	// Update(Chat *entity.Chat) (*entity.Chat, error)
+	// Update(Chat *pb.Chat) (*pb.Chat, error)
 
 	// Get
-	GetById(id uint) (*entity.Chat, error)
-	GetStream(ctx context.Context, stream chan<- entity.Chat) error
+	GetById(id uint) (*pb.Chat, error)
+	GetStream(ctx context.Context, stream chan<- pb.Chat) error
 }
 
 type ChatInteractorImpl struct {
 	firebase            usecase.Firebase
 	chatRepository      usecase.ChatRepository
-	chatGroupRepository usecase.ChatGroupRepository
-	chatUserRepository  usecase.ChatUserRepository
+	// chatGroupRepository usecase.ChatGroupRepository
+	// chatUserRepository  usecase.ChatUserRepository
 }
 
 func NewChatInteractorImpl(
 	fb usecase.Firebase,
 	cR usecase.ChatRepository,
-	cgR usecase.ChatGroupRepository,
-	cuR usecase.ChatUserRepository,
+	// cgR usecase.ChatGroupRepository,
+	// cuR usecase.ChatUserRepository,
 ) ChatInteractor {
 	return &ChatInteractorImpl{
 		firebase:            fb,
 		chatRepository:      cR,
-		chatGroupRepository: cgR,
-		chatUserRepository:  cuR,
+		// chatGroupRepository: cgR,
+		// chatUserRepository:  cuR,
 	}
 }
 
-func (i *ChatInteractorImpl) Create(chat *entity.Chat) (*entity.Chat, error) {
+func (i *ChatInteractorImpl) Create(chat *pb.Chat) (*pb.Chat, error) {
 
 	// ユーザー登録
 	err := i.chatRepository.Create(chat)
@@ -54,7 +54,7 @@ func (i *ChatInteractorImpl) Create(chat *entity.Chat) (*entity.Chat, error) {
 	return chat, nil
 }
 
-// func (i *ChatInteractorImpl) Update(chat *entity.Chat) (*entity.Chat, error) {
+// func (i *ChatInteractorImpl) Update(chat *pb.Chat) (*pb.Chat, error) {
 // 	var (
 // 		err error
 // 	)
@@ -68,9 +68,9 @@ func (i *ChatInteractorImpl) Create(chat *entity.Chat) (*entity.Chat, error) {
 // 	return chat, nil
 // }
 
-func (i *ChatInteractorImpl) GetById(id uint) (*entity.Chat, error) {
+func (i *ChatInteractorImpl) GetById(id uint) (*pb.Chat, error) {
 	var (
-		chat *entity.Chat
+		chat *pb.Chat
 		err  error
 	)
 
@@ -84,7 +84,7 @@ func (i *ChatInteractorImpl) GetById(id uint) (*entity.Chat, error) {
 	return chat, nil
 }
 
-func (i *ChatInteractorImpl) GetStream(ctx context.Context, stream chan<- entity.Chat) error {
+func (i *ChatInteractorImpl) GetStream(ctx context.Context, stream chan<- pb.Chat) error {
 	defer close(stream)
 	eg, _ := errgroup.WithContext(ctx)
 	eg.Go(func() error {

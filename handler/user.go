@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/requests"
+	// "github.com/hidenari-yuda/go-grpc-clean/domain/requests"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
 
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
@@ -15,13 +15,13 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.UserR
 	fmt.Println("db is:", s.Db)
 	fmt.Println("firebase is :", s.Firebase)
 
-	input, err := requests.NewUser(req)
-	if err != nil {
-		return nil, handleError(err)
-	}
+	// input, err := requests.NewUser(req)
+	// if err != nil {
+	// 	return nil, handleError(err)
+	// }
 
 	tx, _ := s.Db.Begin()
-	res, err := s.UserInteractor.Create(input)
+	res, err := s.UserInteractor.Create(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, handleError(err)

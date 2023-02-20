@@ -72,9 +72,9 @@ func regsiterUserServiceServer(ctx context.Context, s *grpc.Server, db *database
 
 func registerChatServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	chatRepository := repository.NewChatRepositoryImpl(db)
-	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
-	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
-	pb.RegisterChatServiceServer(s, NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository, chatGroupRepository, chatUserRepository)))
+	// chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
+	// chatUserRepository := repository.NewChatUserRepositoryImpl(db)
+	pb.RegisterChatServiceServer(s, NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository)))
 }
 
 type Router struct {
