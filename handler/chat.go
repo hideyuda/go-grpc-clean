@@ -1,5 +1,13 @@
 package handler
 
+import (
+	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
+)
+
 // import (
 // 	"context"
 // 	"fmt"
@@ -9,6 +17,21 @@ package handler
 
 // 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 // )
+
+type ChatServiceServer struct {
+	pb.UnimplementedChatServiceServer
+	ChatInteractor interactor.ChatInteractor
+	Db             *database.Db
+	Firebase       usecase.Firebase
+}
+
+func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ChatServiceServer {
+	return &ChatServiceServer{
+		ChatInteractor: chatInteractor,
+		Db:             database.NewDb(),
+		Firebase:       driver.NewFirebaseImpl(),
+	}
+}
 
 // func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
 // 	// Convert context.Context to echo.Context in gRPC server

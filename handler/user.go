@@ -6,11 +6,31 @@ import (
 
 	// "github.com/hidenari-yuda/go-grpc-clean/domain/requests"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 )
 
-func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.UserResponse, error) {
+// server is used to implement helloworld.GreeterServer.
+type UserServiceServer struct {
+	pb.UnimplementedUserServiceServer
+	UserInteractor interactor.UserInteractor
+	Db             *database.Db
+	Firebase       usecase.Firebase
+}
+
+func NewUserSercviceServer(userInteractor interactor.UserInteractor) *UserServiceServer {
+	return &UserServiceServer{
+		UserInteractor: userInteractor,
+		Db:             database.NewDb(),
+		Firebase:       driver.NewFirebaseImpl(),
+	}
+}
+
+func (s *UserServiceServer) Create(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 
 	fmt.Println("db is:", s.Db)
 	fmt.Println("firebase is :", s.Firebase)
@@ -21,7 +41,7 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.UserR
 	// }
 
 	tx, _ := s.Db.Begin()
-	res, err := s.UserInteractor.Create(req)
+	res, err := s.UserInteractor.Create(req.User)
 	if err != nil {
 		tx.Rollback()
 		return nil, handleError(err)
@@ -33,7 +53,7 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.UserR
 
 }
 
-func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
+func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserIdRequest) (*pb.UserResponse, error) {
 
 	res, err := s.UserInteractor.GetById(uint(req.Id))
 	if err != nil {

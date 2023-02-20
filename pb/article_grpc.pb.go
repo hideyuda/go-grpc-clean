@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,11 +23,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticleServiceClient interface {
 	Create(ctx context.Context, in *Article, opts ...grpc.CallOption) (*ArticleResponse, error)
-	CreateHeadlineByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error)
-	CreateContentByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error)
+	CreateHeadlineByKeyword(ctx context.Context, in *ArticleStringRequest, opts ...grpc.CallOption) (*ArticleResponse, error)
+	CreateContentByKeyword(ctx context.Context, in *ArticleStringRequest, opts ...grpc.CallOption) (*ArticleResponse, error)
 	Update(ctx context.Context, in *Article, opts ...grpc.CallOption) (*ArticleResponse, error)
 	// Get
-	GetById(ctx context.Context, in *wrapperspb.Int64Value, opts ...grpc.CallOption) (*ArticleResponse, error)
+	GetById(ctx context.Context, in *ArticleIdRequest, opts ...grpc.CallOption) (*ArticleResponse, error)
 }
 
 type articleServiceClient struct {
@@ -48,7 +47,7 @@ func (c *articleServiceClient) Create(ctx context.Context, in *Article, opts ...
 	return out, nil
 }
 
-func (c *articleServiceClient) CreateHeadlineByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error) {
+func (c *articleServiceClient) CreateHeadlineByKeyword(ctx context.Context, in *ArticleStringRequest, opts ...grpc.CallOption) (*ArticleResponse, error) {
 	out := new(ArticleResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/CreateHeadlineByKeyword", in, out, opts...)
 	if err != nil {
@@ -57,7 +56,7 @@ func (c *articleServiceClient) CreateHeadlineByKeyword(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *articleServiceClient) CreateContentByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error) {
+func (c *articleServiceClient) CreateContentByKeyword(ctx context.Context, in *ArticleStringRequest, opts ...grpc.CallOption) (*ArticleResponse, error) {
 	out := new(ArticleResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/CreateContentByKeyword", in, out, opts...)
 	if err != nil {
@@ -75,7 +74,7 @@ func (c *articleServiceClient) Update(ctx context.Context, in *Article, opts ...
 	return out, nil
 }
 
-func (c *articleServiceClient) GetById(ctx context.Context, in *wrapperspb.Int64Value, opts ...grpc.CallOption) (*ArticleResponse, error) {
+func (c *articleServiceClient) GetById(ctx context.Context, in *ArticleIdRequest, opts ...grpc.CallOption) (*ArticleResponse, error) {
 	out := new(ArticleResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/GetById", in, out, opts...)
 	if err != nil {
@@ -89,11 +88,11 @@ func (c *articleServiceClient) GetById(ctx context.Context, in *wrapperspb.Int64
 // for forward compatibility
 type ArticleServiceServer interface {
 	Create(context.Context, *Article) (*ArticleResponse, error)
-	CreateHeadlineByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error)
-	CreateContentByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error)
+	CreateHeadlineByKeyword(context.Context, *ArticleStringRequest) (*ArticleResponse, error)
+	CreateContentByKeyword(context.Context, *ArticleStringRequest) (*ArticleResponse, error)
 	Update(context.Context, *Article) (*ArticleResponse, error)
 	// Get
-	GetById(context.Context, *wrapperspb.Int64Value) (*ArticleResponse, error)
+	GetById(context.Context, *ArticleIdRequest) (*ArticleResponse, error)
 	mustEmbedUnimplementedArticleServiceServer()
 }
 
@@ -104,16 +103,16 @@ type UnimplementedArticleServiceServer struct {
 func (UnimplementedArticleServiceServer) Create(context.Context, *Article) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedArticleServiceServer) CreateHeadlineByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error) {
+func (UnimplementedArticleServiceServer) CreateHeadlineByKeyword(context.Context, *ArticleStringRequest) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateHeadlineByKeyword not implemented")
 }
-func (UnimplementedArticleServiceServer) CreateContentByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error) {
+func (UnimplementedArticleServiceServer) CreateContentByKeyword(context.Context, *ArticleStringRequest) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateContentByKeyword not implemented")
 }
 func (UnimplementedArticleServiceServer) Update(context.Context, *Article) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedArticleServiceServer) GetById(context.Context, *wrapperspb.Int64Value) (*ArticleResponse, error) {
+func (UnimplementedArticleServiceServer) GetById(context.Context, *ArticleIdRequest) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
 func (UnimplementedArticleServiceServer) mustEmbedUnimplementedArticleServiceServer() {}
@@ -148,7 +147,7 @@ func _ArticleService_Create_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _ArticleService_CreateHeadlineByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(wrapperspb.StringValue)
+	in := new(ArticleStringRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -160,13 +159,13 @@ func _ArticleService_CreateHeadlineByKeyword_Handler(srv interface{}, ctx contex
 		FullMethod: "/article.ArticleService/CreateHeadlineByKeyword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).CreateHeadlineByKeyword(ctx, req.(*wrapperspb.StringValue))
+		return srv.(ArticleServiceServer).CreateHeadlineByKeyword(ctx, req.(*ArticleStringRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ArticleService_CreateContentByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(wrapperspb.StringValue)
+	in := new(ArticleStringRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -178,7 +177,7 @@ func _ArticleService_CreateContentByKeyword_Handler(srv interface{}, ctx context
 		FullMethod: "/article.ArticleService/CreateContentByKeyword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).CreateContentByKeyword(ctx, req.(*wrapperspb.StringValue))
+		return srv.(ArticleServiceServer).CreateContentByKeyword(ctx, req.(*ArticleStringRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -202,7 +201,7 @@ func _ArticleService_Update_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _ArticleService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(wrapperspb.Int64Value)
+	in := new(ArticleIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -214,7 +213,7 @@ func _ArticleService_GetById_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/article.ArticleService/GetById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).GetById(ctx, req.(*wrapperspb.Int64Value))
+		return srv.(ArticleServiceServer).GetById(ctx, req.(*ArticleIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
