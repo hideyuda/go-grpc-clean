@@ -31,4 +31,4 @@ services:
       DB_HOST: db
     depends_on:
       - db
-    command: go run main.go
+    command: go run ./cmd/main.go
