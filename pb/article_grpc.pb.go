@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,11 +24,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticleServiceClient interface {
 	Create(ctx context.Context, in *Article, opts ...grpc.CallOption) (*ArticleResponse, error)
-	CreateByKeyword(ctx context.Context, in *CreateArticleByKeywordRequest, opts ...grpc.CallOption) (*ArticleResponse, error)
+	CreateHeadlineByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error)
+	CreateContentByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error)
 	Update(ctx context.Context, in *Article, opts ...grpc.CallOption) (*ArticleResponse, error)
 	// Get
-	GetById(ctx context.Context, in *GetArticleByIdRequest, opts ...grpc.CallOption) (*ArticleResponse, error)
-	GetStream(ctx context.Context, in *GetArticleStreamRequest, opts ...grpc.CallOption) (ArticleService_GetStreamClient, error)
+	GetById(ctx context.Context, in *wrapperspb.Int64Value, opts ...grpc.CallOption) (*ArticleResponse, error)
 }
 
 type articleServiceClient struct {
@@ -47,9 +48,18 @@ func (c *articleServiceClient) Create(ctx context.Context, in *Article, opts ...
 	return out, nil
 }
 
-func (c *articleServiceClient) CreateByKeyword(ctx context.Context, in *CreateArticleByKeywordRequest, opts ...grpc.CallOption) (*ArticleResponse, error) {
+func (c *articleServiceClient) CreateHeadlineByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error) {
 	out := new(ArticleResponse)
-	err := c.cc.Invoke(ctx, "/article.ArticleService/CreateByKeyword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/article.ArticleService/CreateHeadlineByKeyword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *articleServiceClient) CreateContentByKeyword(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*ArticleResponse, error) {
+	out := new(ArticleResponse)
+	err := c.cc.Invoke(ctx, "/article.ArticleService/CreateContentByKeyword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +75,7 @@ func (c *articleServiceClient) Update(ctx context.Context, in *Article, opts ...
 	return out, nil
 }
 
-func (c *articleServiceClient) GetById(ctx context.Context, in *GetArticleByIdRequest, opts ...grpc.CallOption) (*ArticleResponse, error) {
+func (c *articleServiceClient) GetById(ctx context.Context, in *wrapperspb.Int64Value, opts ...grpc.CallOption) (*ArticleResponse, error) {
 	out := new(ArticleResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/GetById", in, out, opts...)
 	if err != nil {
@@ -74,48 +84,16 @@ func (c *articleServiceClient) GetById(ctx context.Context, in *GetArticleByIdRe
 	return out, nil
 }
 
-func (c *articleServiceClient) GetStream(ctx context.Context, in *GetArticleStreamRequest, opts ...grpc.CallOption) (ArticleService_GetStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ArticleService_ServiceDesc.Streams[0], "/article.ArticleService/GetStream", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &articleServiceGetStreamClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type ArticleService_GetStreamClient interface {
-	Recv() (*ArticleResponse, error)
-	grpc.ClientStream
-}
-
-type articleServiceGetStreamClient struct {
-	grpc.ClientStream
-}
-
-func (x *articleServiceGetStreamClient) Recv() (*ArticleResponse, error) {
-	m := new(ArticleResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // ArticleServiceServer is the server API for ArticleService service.
 // All implementations must embed UnimplementedArticleServiceServer
 // for forward compatibility
 type ArticleServiceServer interface {
 	Create(context.Context, *Article) (*ArticleResponse, error)
-	CreateByKeyword(context.Context, *CreateArticleByKeywordRequest) (*ArticleResponse, error)
+	CreateHeadlineByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error)
+	CreateContentByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error)
 	Update(context.Context, *Article) (*ArticleResponse, error)
 	// Get
-	GetById(context.Context, *GetArticleByIdRequest) (*ArticleResponse, error)
-	GetStream(*GetArticleStreamRequest, ArticleService_GetStreamServer) error
+	GetById(context.Context, *wrapperspb.Int64Value) (*ArticleResponse, error)
 	mustEmbedUnimplementedArticleServiceServer()
 }
 
@@ -126,17 +104,17 @@ type UnimplementedArticleServiceServer struct {
 func (UnimplementedArticleServiceServer) Create(context.Context, *Article) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedArticleServiceServer) CreateByKeyword(context.Context, *CreateArticleByKeywordRequest) (*ArticleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateByKeyword not implemented")
+func (UnimplementedArticleServiceServer) CreateHeadlineByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateHeadlineByKeyword not implemented")
+}
+func (UnimplementedArticleServiceServer) CreateContentByKeyword(context.Context, *wrapperspb.StringValue) (*ArticleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateContentByKeyword not implemented")
 }
 func (UnimplementedArticleServiceServer) Update(context.Context, *Article) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedArticleServiceServer) GetById(context.Context, *GetArticleByIdRequest) (*ArticleResponse, error) {
+func (UnimplementedArticleServiceServer) GetById(context.Context, *wrapperspb.Int64Value) (*ArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
-}
-func (UnimplementedArticleServiceServer) GetStream(*GetArticleStreamRequest, ArticleService_GetStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetStream not implemented")
 }
 func (UnimplementedArticleServiceServer) mustEmbedUnimplementedArticleServiceServer() {}
 
@@ -169,20 +147,38 @@ func _ArticleService_Create_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ArticleService_CreateByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateArticleByKeywordRequest)
+func _ArticleService_CreateHeadlineByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(wrapperspb.StringValue)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ArticleServiceServer).CreateByKeyword(ctx, in)
+		return srv.(ArticleServiceServer).CreateHeadlineByKeyword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/article.ArticleService/CreateByKeyword",
+		FullMethod: "/article.ArticleService/CreateHeadlineByKeyword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).CreateByKeyword(ctx, req.(*CreateArticleByKeywordRequest))
+		return srv.(ArticleServiceServer).CreateHeadlineByKeyword(ctx, req.(*wrapperspb.StringValue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ArticleService_CreateContentByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(wrapperspb.StringValue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ArticleServiceServer).CreateContentByKeyword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/article.ArticleService/CreateContentByKeyword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ArticleServiceServer).CreateContentByKeyword(ctx, req.(*wrapperspb.StringValue))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -206,7 +202,7 @@ func _ArticleService_Update_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _ArticleService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetArticleByIdRequest)
+	in := new(wrapperspb.Int64Value)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -218,30 +214,9 @@ func _ArticleService_GetById_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/article.ArticleService/GetById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).GetById(ctx, req.(*GetArticleByIdRequest))
+		return srv.(ArticleServiceServer).GetById(ctx, req.(*wrapperspb.Int64Value))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _ArticleService_GetStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetArticleStreamRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ArticleServiceServer).GetStream(m, &articleServiceGetStreamServer{stream})
-}
-
-type ArticleService_GetStreamServer interface {
-	Send(*ArticleResponse) error
-	grpc.ServerStream
-}
-
-type articleServiceGetStreamServer struct {
-	grpc.ServerStream
-}
-
-func (x *articleServiceGetStreamServer) Send(m *ArticleResponse) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 // ArticleService_ServiceDesc is the grpc.ServiceDesc for ArticleService service.
@@ -256,8 +231,12 @@ var ArticleService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ArticleService_Create_Handler,
 		},
 		{
-			MethodName: "CreateByKeyword",
-			Handler:    _ArticleService_CreateByKeyword_Handler,
+			MethodName: "CreateHeadlineByKeyword",
+			Handler:    _ArticleService_CreateHeadlineByKeyword_Handler,
+		},
+		{
+			MethodName: "CreateContentByKeyword",
+			Handler:    _ArticleService_CreateContentByKeyword_Handler,
 		},
 		{
 			MethodName: "Update",
@@ -268,12 +247,6 @@ var ArticleService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ArticleService_GetById_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetStream",
-			Handler:       _ArticleService_GetStream_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "article.proto",
 }

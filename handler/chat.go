@@ -11,11 +11,8 @@ import (
 )
 
 func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
-
 	// Convert context.Context to echo.Context in gRPC server
-
 	fmt.Println("Create")
-
 	input := &entity.Chat{
 		From:    uint(req.From),
 		Content: req.Content,
