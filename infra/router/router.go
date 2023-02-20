@@ -1,4 +1,4 @@
-package handler
+package router
 
 import (
 	"context"
@@ -8,86 +8,25 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/hidenari-yuda/go-grpc-clean/repository"
-	"github.com/hidenari-yuda/go-grpc-clean/usecase"
-	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
-
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/di"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
-	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-// server is used to implement helloworld.GreeterServer.
-type UserServiceServer struct {
-	pb.UnimplementedUserServiceServer
-	UserInteractor interactor.UserInteractor
-	Db             *database.Db
-	Firebase       usecase.Firebase
-}
+// type Router struct {
+// 	cfg config.Config
+// }
 
-type ChatServiceServer struct {
-	pb.UnimplementedChatServiceServer
-	ChatInteractor interactor.ChatInteractor
-	Db             *database.Db
-	Firebase       usecase.Firebase
-}
+// func NewRouter(cfg config.Config)  {
+// 	return &Router{
+// 		cfg: cfg,
+// 	}
+// }
 
-type KeywordServiceServer struct {
-	pb.UnimplementedKeywordServiceServer
-	// KeywordInteractor interactor.KeywordInteractor
-	Db       *database.Db
-	Firebase usecase.Firebase
-}
-
-type ArticleServiceServer struct {
-	pb.UnimplementedArticleServiceServer
-	// ArticleInteractor interactor.ArticleInteractor
-	Db       *database.Db
-	Firebase usecase.Firebase
-}
-
-func NewUserSercviceServer(userInteractor interactor.UserInteractor) *UserServiceServer {
-	return &UserServiceServer{
-		UserInteractor: userInteractor,
-		Db:             database.NewDb(),
-		Firebase:       driver.NewFirebaseImpl(),
-	}
-}
-
-func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ChatServiceServer {
-	return &ChatServiceServer{
-		ChatInteractor: chatInteractor,
-		Db:             database.NewDb(),
-		Firebase:       driver.NewFirebaseImpl(),
-	}
-}
-
-func regsiterUserServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
-	userRepository := repository.NewUserRepositoryImpl(db)
-	pb.RegisterUserServiceServer(s, NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
-}
-
-func registerChatServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
-	chatRepository := repository.NewChatRepositoryImpl(db)
-	// chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
-	// chatUserRepository := repository.NewChatUserRepositoryImpl(db)
-	pb.RegisterChatServiceServer(s, NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository)))
-}
-
-type Router struct {
-	cfg config.Config
-}
-
-func NewRouter(cfg config.Config) *Router {
-	return &Router{
-		cfg: cfg,
-	}
-}
-
-func (r *Router) Start() *Router {
+func Start() {
 	var (
 		db       = database.NewDb()
 		firebase = driver.NewFirebaseImpl()
@@ -101,8 +40,7 @@ func (r *Router) Start() *Router {
 	s := grpc.NewServer()
 
 	ctx := context.Background()
-	regsiterUserServiceServer(ctx, s, db, firebase)
-	registerChatServiceServer(ctx, s, db, firebase)
+	di.RegisterServiceServer(ctx, s, db, firebase)
 
 	// for grpcurl
 	reflection.Register(s)
@@ -121,48 +59,47 @@ func (r *Router) Start() *Router {
 	log.Println("stopping gRPC server...")
 	s.GracefulStop()
 
-	// r.Engine.HidePort = true
-	// r.Engine.HideBanner = true
-	// r.Engine.Use(middleware.Recover())
-
-	// var origins []string
-
-	// if r.cfg.App.Env == "local" {
-	// 	origins = []string{
-	// 		"http://localhost:8080",
-	// 		"http://localhost:3000",
-	// 	}
-	// } else if r.cfg.App.Env == "dev" {
-	// 	origins = r.cfg.App.CorsDomains
-	// } else if r.cfg.App.Env == "prd" {
-	// 	origins = r.cfg.App.CorsDomains
-	// }
-
-	// r.Engine.Use(middleware.CORSWithConfig((middleware.CORSConfig{
-	// 	AllowOrigins: origins,
-	// 	AllowHeaders: []string{
-	// 		echo.HeaderAuthorization,
-	// 		echo.HeaderAccessControlAllowHeaders,
-	// 		echo.HeaderContentType,
-	// 		echo.HeaderOrigin,
-	// 		echo.HeaderAccessControlAllowOrigin,
-	// 		"FirebaseAuthorization",
-	// 	},
-	// 	AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
-	// })))
-
-	// r.Engine.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	// 	Skipper: func(c echo.Context) bool {
-	// 		if strings.Contains(c.Request().URL.Path, "healthz") {
-	// 			return true
-	// 		} else {
-	// 			return false
-	// 		}
-	// 	},
-	// }))
-
-	return r
 }
+
+// r.Engine.HidePort = true
+// r.Engine.HideBanner = true
+// r.Engine.Use(middleware.Recover())
+
+// var origins []string
+
+// if r.cfg.App.Env == "local" {
+// 	origins = []string{
+// 		"http://localhost:8080",
+// 		"http://localhost:3000",
+// 	}
+// } else if r.cfg.App.Env == "dev" {
+// 	origins = r.cfg.App.CorsDomains
+// } else if r.cfg.App.Env == "prd" {
+// 	origins = r.cfg.App.CorsDomains
+// }
+
+// r.Engine.Use(middleware.CORSWithConfig((middleware.CORSConfig{
+// 	AllowOrigins: origins,
+// 	AllowHeaders: []string{
+// 		echo.HeaderAuthorization,
+// 		echo.HeaderAccessControlAllowHeaders,
+// 		echo.HeaderContentType,
+// 		echo.HeaderOrigin,
+// 		echo.HeaderAccessControlAllowOrigin,
+// 		"FirebaseAuthorization",
+// 	},
+// 	AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
+// })))
+
+// r.Engine.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+// 	Skipper: func(c echo.Context) bool {
+// 		if strings.Contains(c.Request().URL.Path, "healthz") {
+// 			return true
+// 		} else {
+// 			return false
+// 		}
+// 	},
+// }))
 
 // func (r *Router) Start() {
 // 	fmt.Printf("start server, port: %d", config.App.Port)

@@ -9,7 +9,7 @@ func NewUser(res *pb.User) *pb.UserResponse {
 	return &pb.UserResponse{
 		// Error: false,
 		User: &pb.User{
-			Id:         uint32(res.Id),
+			Id:        res.Id,
 			Uuid:       res.Uuid,
 			FirebaseId: res.FirebaseId,
 			Name:       res.Name,

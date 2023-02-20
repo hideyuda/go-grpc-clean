@@ -10,8 +10,8 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
-	"github.com/hidenari-yuda/go-grpc-clean/handler"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/router"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -57,7 +57,6 @@ func main() {
 		// 	fmt.Println("getTestUserToken:", uuid.New().String())
 		// 	getTestUserToken(firebase, uuid.New().String())
 		// }
-		r := handler.NewRouter(cfg)
 
 		// // エラーハンドラー（dev or prdのみSlack通知）
 		// if cfg.App.Env != "local" {
@@ -65,7 +64,7 @@ func main() {
 		// }
 
 		// ルーティング
-		r.Start()
+		router.Start()
 
 		// case "batch":
 		// 	batch.NewBatch(cfg).Start()
