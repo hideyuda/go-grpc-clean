@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
@@ -22,7 +22,7 @@ func NewUserRepositoryImpl(ex SQLExecuter) usecase.UserRepository {
 }
 
 /***** Create *****/
-func (r *UserRepositoryImpl) Create(param *entity.User) error {
+func (r *UserRepositoryImpl) Create(param *pb.User) error {
 	now := time.Now()
 
 	_, err := r.executer.Exec(
@@ -64,7 +64,7 @@ func (r *UserRepositoryImpl) Create(param *entity.User) error {
 }
 
 /***** Update *****/
-func (r *UserRepositoryImpl) Update(user *entity.User) error {
+func (r *UserRepositoryImpl) Update(user *pb.User) error {
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE users SET
@@ -126,9 +126,9 @@ func (r *UserRepositoryImpl) UpdateColumnInt(lineUserId, column string, value in
 }
 
 /***** Get *****/
-func (r *UserRepositoryImpl) GetById(id uint) (*entity.User, error) {
+func (r *UserRepositoryImpl) GetById(id uint) (*pb.User, error) {
 	var (
-		user entity.User
+		user pb.User
 	)
 
 	err := r.executer.Get(
@@ -145,7 +145,7 @@ func (r *UserRepositoryImpl) GetById(id uint) (*entity.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepositoryImpl) SignIn(email, password string) (user *entity.User, err error) {
+func (r *UserRepositoryImpl) SignIn(email, password string) (user *pb.User, err error) {
 	err = r.executer.Get(
 		r.Name+"SignIn",
 		user,
@@ -161,9 +161,9 @@ func (r *UserRepositoryImpl) SignIn(email, password string) (user *entity.User, 
 	return user, nil
 }
 
-func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*entity.User, error) {
+func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*pb.User, error) {
 	var (
-		user entity.User
+		user pb.User
 	)
 	err := r.executer.Get(
 		r.Name+"GetByFirebaseId",
@@ -182,9 +182,9 @@ func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*entity.User, e
 }
 
 // getAll
-func (r *UserRepositoryImpl) GetAll() ([]*entity.User, error) {
+func (r *UserRepositoryImpl) GetAll() ([]*pb.User, error) {
 	var (
-		users []*entity.User
+		users []*pb.User
 	)
 	err := r.executer.Select(
 		r.Name+"GetAll",

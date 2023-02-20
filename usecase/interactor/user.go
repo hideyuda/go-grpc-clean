@@ -3,25 +3,25 @@ package interactor
 import (
 	"fmt"
 
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
 type UserInteractor interface {
 	// Gest API
 	// Create
-	Create(user *entity.User) (*entity.User, error)
+	Create(user *pb.User) (*pb.User, error)
 
 	// Update
-	Update(user *entity.User) (*entity.User, error)
+	Update(user *pb.User) (*pb.User, error)
 
 	// Get
-	GetById(id uint) (*entity.User, error)
-	SignIn(param *entity.SignInParam) (*entity.User, error)
-	GetByFirebaseToken(token string) (*entity.User, error)
+	GetById(id uint) (*pb.User, error)
+	SignIn(param *pb.SignInRequest) (*pb.User, error)
+	GetByFirebaseToken(token string) (*pb.User, error)
 
 	// admin API
-	GetAll() ([]*entity.User, error)
+	GetAll() ([]*pb.User, error)
 }
 
 type UserInteractorImpl struct {
@@ -44,14 +44,14 @@ func NewUserInteractorImpl(
 
 // Create
 // type Createuser struct {
-// 	Param *entity.User
+// 	Param *pb.User
 // }
 
 // type CreateOutput struct {
 // 	Ok bool
 // }
 
-func (i *UserInteractorImpl) Create(user *entity.User) (*entity.User, error) {
+func (i *UserInteractorImpl) Create(user *pb.User) (*pb.User, error) {
 
 	// ユーザー登録
 	err := i.userRepository.Create(user)
@@ -63,7 +63,7 @@ func (i *UserInteractorImpl) Create(user *entity.User) (*entity.User, error) {
 }
 
 // Update
-func (i *UserInteractorImpl) Update(user *entity.User) (*entity.User, error) {
+func (i *UserInteractorImpl) Update(user *pb.User) (*pb.User, error) {
 
 	// ユーザー登録
 	err := i.userRepository.Create(user)
@@ -75,9 +75,9 @@ func (i *UserInteractorImpl) Update(user *entity.User) (*entity.User, error) {
 }
 
 // GetById
-func (i *UserInteractorImpl) GetById(id uint) (*entity.User, error) {
+func (i *UserInteractorImpl) GetById(id uint) (*pb.User, error) {
 	var (
-		user *entity.User
+		user *pb.User
 		err  error
 	)
 
@@ -92,34 +92,34 @@ func (i *UserInteractorImpl) GetById(id uint) (*entity.User, error) {
 }
 
 // SignIn
-func (i *UserInteractorImpl) SignIn(param *entity.SignInParam) (*entity.User, error) {
+func (i *UserInteractorImpl) SignIn(param *pb.SignInRequest) (*pb.User, error) {
 	var (
-		user *entity.User
-		err  error
+		user *pb.User
+		// err  error
 	)
 
-	firebaseId, err := i.firebase.VerifyIDToken(param.Token)
-	if err != nil {
-		return user, err
-	}
+	// firebaseId, err := i.firebase.VerifyIDToken(param.Token)
+	// if err != nil {
+	// 	return user, err
+	// }
 
-	fmt.Println("exported firebaseToken is:", param.Token)
-	fmt.Println("exported firebaseId is:", firebaseId)
+	// fmt.Println("exported firebaseToken is:", param.Token)
+	// fmt.Println("exported firebaseId is:", firebaseId)
 
-	// ユーザー登録
-	user, err = i.userRepository.GetByFirebaseId(firebaseId)
-	if err != nil {
-		return user, err
-	}
+	// // ユーザー登録
+	// user, err = i.userRepository.GetByFirebaseId(firebaseId)
+	// if err != nil {
+	// 	return user, err
+	// }
 
 	return user, nil
 
 }
 
 // GetByFirebaseToken
-func (i *UserInteractorImpl) GetByFirebaseToken(token string) (*entity.User, error) {
+func (i *UserInteractorImpl) GetByFirebaseToken(token string) (*pb.User, error) {
 	var (
-		user *entity.User
+		user *pb.User
 		err  error
 	)
 
@@ -141,9 +141,9 @@ func (i *UserInteractorImpl) GetByFirebaseToken(token string) (*entity.User, err
 }
 
 // GetAll
-func (i *UserInteractorImpl) GetAll() ([]*entity.User, error) {
+func (i *UserInteractorImpl) GetAll() ([]*pb.User, error) {
 	var (
-		users []*entity.User
+		users []*pb.User
 		err   error
 	)
 

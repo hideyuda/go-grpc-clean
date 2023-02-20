@@ -15,6 +15,7 @@ import (
 	"firebase.google.com/go/auth"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 	"github.com/pkg/errors"
 	"google.golang.org/api/option"
@@ -189,8 +190,8 @@ func (d *FirebaseImpl) UpdatePassword(password, uid string) error {
 
 // Listen はchatコレクションのリアルタイムアップデートを確認する処理です
 //  https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots
-func (d *FirebaseImpl) GetChatStream(ctx context.Context, stream chan<- entity.Chat) error {
-	chat := entity.Chat{}
+func (d *FirebaseImpl) GetChatStream(ctx context.Context, stream chan<- pb.Chat) error {
+	chat := pb.Chat{}
 
 	snapIter := d.firestore.Collection("chat").Snapshots(ctx)
 	defer snapIter.Stop()

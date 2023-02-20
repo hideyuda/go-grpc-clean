@@ -1,63 +1,63 @@
 package usecase
 
-import "github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+import "github.com/hidenari-yuda/go-grpc-clean/pb"
 
 type UserRepository interface {
 	// Gest API
 	// Create
-	Create(param *entity.User) error
+	Create(param *pb.User) error
 
 	// Update
-	Update(param *entity.User) error
+	Update(param *pb.User) error
 	UpdateColumnStr(lineUserId, column, value string) error
 	UpdateColumnInt(lineUserId, column string, value int) error
 
 	// Get
-	GetById(id uint) (*entity.User, error)
-	SignIn(mail, password string) (user *entity.User, err error)
-	GetByFirebaseId(firebaseId string) (*entity.User, error)
+	GetById(id uint) (*pb.User, error)
+	SignIn(mail, password string) (user *pb.User, err error)
+	GetByFirebaseId(firebaseId string) (*pb.User, error)
 
 	// admin
-	GetAll() ([]*entity.User, error)
+	GetAll() ([]*pb.User, error)
 }
 
-type ChatGroupRepository interface {
-	// Gest API
-	// Create
-	Create(param *entity.ChatGroup) error
+// type ChatGroupRepository interface {
+// 	// Gest API
+// 	// Create
+// 	Create(param *pb.ChatGroup) error
 
-	// Update
-	Update(param *entity.ChatGroup) error
+// 	// Update
+// 	Update(param *pb.ChatGroup) error
 
-	// Delete
-	Delete(id uint) error
+// 	// Delete
+// 	Delete(id uint) error
 
-	// Get
-	GetById(id uint) (*entity.ChatGroup, error)
-}
+// 	// Get
+// 	GetById(id uint) (*pb.ChatGroup, error)
+// }
 
-type ChatUserRepository interface {
-	// Gest API
-	// Create
-	Create(param *entity.ChatUser) error
+// type ChatUserRepository interface {
+// 	// Gest API
+// 	// Create
+// 	Create(param *pb.ChatUser) error
 
-	// Delete
-	Delete(id uint) error
+// 	// Delete
+// 	Delete(id uint) error
 
-	// Get
-	GetById(id uint) (*entity.ChatUser, error)
-	GetListByGroupId(groupId uint) ([]*entity.ChatUser, error)
-}
+// 	// Get
+// 	GetById(id uint) (*pb.ChatUser, error)
+// 	GetListByGroupId(groupId uint) ([]*pb.ChatUser, error)
+// }
 
 type ChatRepository interface {
 	// Gest API
 	// Create
-	Create(param *entity.Chat) error
+	Create(param *pb.Chat) error
 
 	// Delete
 	Delete(id uint) error
 
 	// Get
-	GetById(id uint) (*entity.Chat, error)
-	GetListByGroupId(groupId uint) ([]*entity.Chat, error)
+	GetById(id uint) (*pb.Chat, error)
+	GetListByGroupId(groupId uint) ([]*pb.Chat, error)
 }
