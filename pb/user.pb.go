@@ -9,11 +9,12 @@
 package pb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -139,7 +140,7 @@ type User struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id         uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id         uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" db:"id"`
 	Uuid       string                 `protobuf:"bytes,2,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	FirebaseId string                 `protobuf:"bytes,3,opt,name=firebase_id,json=firebaseId,proto3" json:"firebase_id,omitempty"`
 	Name       string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`

@@ -35,6 +35,20 @@ type ChatServiceServer struct {
 	Firebase       usecase.Firebase
 }
 
+type KeywordServiceServer struct {
+	pb.UnimplementedKeywordServiceServer
+	// KeywordInteractor interactor.KeywordInteractor
+	Db       *database.Db
+	Firebase usecase.Firebase
+}
+
+type ArticleServiceServer struct {
+	pb.UnimplementedArticleServiceServer
+	// ArticleInteractor interactor.ArticleInteractor
+	Db       *database.Db
+	Firebase usecase.Firebase
+}
+
 func NewUserSercviceServer(userInteractor interactor.UserInteractor) *UserServiceServer {
 	return &UserServiceServer{
 		UserInteractor: userInteractor,
