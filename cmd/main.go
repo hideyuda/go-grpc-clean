@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
+	"github.com/hidenari-yuda/go-grpc-clean/infra/batch"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/router"
 
@@ -34,16 +34,15 @@ func init() {
 }
 
 func main() {
-	cfg, err := config.New()
+	err := config.New()
 	if err != nil {
 		panic(err)
 	}
 	utils.LoggingSettings(config.App.LogFilePath)
-	log.Println(fmt.Sprint("Server is running on port: ", config.App.Port))
 
 	// ctx := context.Background()
 
-	switch cfg.App.Service {
+	switch config.App.Service {
 	case "api":
 		// 一旦 apiコンテナを立ち上げる時にマイグレーションする
 		db := database.NewDb()
@@ -66,8 +65,8 @@ func main() {
 		// ルーティング
 		router.Start()
 
-		// case "batch":
-		// 	batch.NewBatch(cfg).Start()
+	case "batch":
+		batch.NewBatch().Start()
 	}
 }
 
@@ -82,7 +81,7 @@ func main() {
 
 func customHTTPErrorHandler(err error, c echo.Context) {
 	var (
-		cfg, _        = config.New()
+		// cfg, _        = config.New()
 		code, message = entity.ErrorInfo(err)
 		statusCode    = strconv.Itoa(code)
 		path          = c.Path()
@@ -101,8 +100,8 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 	// アクセストークンを使用してクライアントを生成する
 	// https://api.slack.com/apps からトークン取得
 	// 参考: https://risaki-masa.com/how-to-get-api-token-in-slack/
-	tkn := cfg.Slack.AccessToken
-	chanelID := cfg.Slack.ChanelID
+	tkn := config.Slack.AccessToken
+	chanelID := config.Slack.ChanelID
 	s := slack.New(tkn)
 
 	// MsgOptionText() の第二引数に true を設定すると特殊文字をエスケープする

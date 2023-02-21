@@ -13,99 +13,6 @@ type Config struct {
 	UberSuggest UberSuggestObj `required:"true" envconfig:"UBER_SUGGEST"`
 }
 
-func New() (Config, error) {
-	var c Config
-	err := envconfig.Process("", &c)
-	if err != nil {
-		return Config{}, err
-	}
-
-	// Set global variables
-	App = AppObj{
-		Env:            c.App.Env,
-		Service:        c.App.Service,
-		BatchType:      c.App.BatchType,
-		Port:           c.App.Port,
-		BasicUsers:     c.App.BasicUsers,
-		BasicPasswords: c.App.BasicPasswords,
-		BasicSecret:    c.App.BasicSecret,
-		CorsDomains:    c.App.CorsDomains,
-		ClientDomain:   c.App.ClientDomain,
-		PythonDomain:   c.App.PythonDomain,
-		LogFilePath:    c.App.LogFilePath,
-	}
-
-	Db = DbObj{
-		Host:               c.Db.Host,
-		Port:               c.Db.Port,
-		Name:               c.Db.Name,
-		User:               c.Db.User,
-		Pass:               c.Db.Pass,
-		InstanceUnixSocket: c.Db.InstanceUnixSocket,
-	}
-
-	Firebase = FirebaseObj{
-		JsonFilePath: c.Firebase.JsonFilePath,
-		WebApiKey:    c.Firebase.WebApiKey,
-	}
-
-	Sendgrid = SendgridObj{
-		ApiKey: c.Sendgrid.ApiKey,
-	}
-
-	return c, nil
-}
-
-type AppObj struct {
-	Env            string   `required:"true" split_words:"true"`
-	Service        string   `required:"true" split_words:"true"`
-	BatchType      string   `required:"true" split_words:"true"`
-	Port           int      `required:"true" split_words:"true"`
-	BasicUsers     []string `required:"true" split_words:"true"`
-	BasicPasswords []string `required:"true" split_words:"true"`
-	BasicSecret    string   `required:"true" split_words:"true"`
-	CorsDomains    []string `required:"true" split_words:"true"`
-	ClientDomain   string   `required:"true" split_words:"true"`
-	PythonDomain   string   `required:"true" split_words:"true"`
-	LogFilePath    string   `required:"true" split_words:"true"`
-}
-
-type DbObj struct {
-	Host               string `required:"true" split_words:"true"`
-	Port               int    `required:"true" split_words:"true"`
-	Name               string `required:"true" split_words:"true"`
-	User               string `required:"true" split_words:"true"`
-	Pass               string `required:"true" split_words:"true"`
-	InstanceUnixSocket string `required:"true" split_words:"true"`
-}
-
-type FirebaseObj struct {
-	JsonFilePath string `required:"true" split_words:"true"`
-	WebApiKey    string `required:"true" split_words:"true"`
-}
-
-type SendgridObj struct {
-	ApiKey string `required:"true" split_words:"true"`
-}
-
-type SlackObj struct {
-	AccessToken string `required:"true" split_words:"true"`
-	ChanelID    string `required:"true" split_words:"true"`
-}
-
-type GoogleObj struct {
-	ApplicationCredentials string `required:"true" split_words:"true"`
-}
-
-type ChatGptObj struct {
-	SecretKey string `required:"true" split_words:"true"`
-}
-
-type UberSuggestObj struct {
-	Email    string `required:"true" split_words:"true"`
-	Password string `required:"true" split_words:"true"`
-}
-
 var (
 	App         AppObj
 	Db          DbObj
@@ -117,45 +24,237 @@ var (
 	UberSuggest UberSuggestObj
 )
 
-// var (
-// 	// AppEnv is the environment of the application.
-// 	AppEnv string
-// 	// AppService is the service name of the application.
-// 	AppService string
-// 	// AppBatchType is the batch type of the application.
-// 	AppBatchType string
-// 	// AppPort is the port of the application.
-// 	AppPort int
-// 	// AppBasicUsers is the basic users of the application.
-// 	AppBasicUsers []string
-// 	// AppBasicPasswords is the basic passwords of the application.
-// 	AppBasicPasswords []string
-// 	// AppCorsDomains is the cors domains of the application.
-// 	AppCorsDomains []string
-// 	// AppLogFilePath is the log file path of the application.
-// 	AppLogFilePath string
-// 	// DbHost is the host of the database.
-// 	DbHost string
-// 	// DbPort is the port of the database.
-// 	DbPort int
-// 	// DbName is the name of the database.
-// 	DbName string
-// 	// DbUser is the user of the database.
-// 	DbUser string
-// 	// DbPass is the password of the database.
-// 	DbPass string
-// 	// DbInstanceUnixSocket is the instance unix socket of the database.
-// 	DbInstanceUnixSocket string
-// 	// FirebaseJsonFilePath is the Json file path of the firebase.
-// 	FirebaseJsonFilePath string
-// 	// FirebaseWebApiKey is the web Api key of the firebase.
-// 	FirebaseWebApiKey string
-// 	// SendgridApiKey is the Api key of the sendgrid.
-// 	SendgridApiKey string
-// 	// SlackWebhookUrl is the webhook url of the slack.
-// 	SlackWebhookUrl string
-// 	// GoogleClientID is the client id of the google.
-// 	GoogleClientID string
-// 	// GoogleClientSecret is the client secret of the google.
-// 	GoogleClientSecret string
-// )
+func New() error {
+	var cfg Config
+	err := envconfig.Process("", &cfg)
+	if err != nil {
+		return err
+	}
+
+	// Set global variables
+	App = NewAppObj(
+		cfg.App.Env,
+		cfg.App.Service,
+		cfg.App.BatchType,
+		cfg.App.Port,
+		cfg.App.BasicUsers,
+		cfg.App.BasicPasswords,
+		cfg.App.BasicSecret,
+		cfg.App.CorsDomains,
+		cfg.App.ClientDomain,
+		cfg.App.PythonDomain,
+		cfg.App.LogFilePath,
+	)
+
+	Db = NewDbObj(
+		cfg.Db.Host,
+		cfg.Db.Port,
+		cfg.Db.Name,
+		cfg.Db.User,
+		cfg.Db.Pass,
+		cfg.Db.InstanceUnixSocket,
+	)
+
+	Firebase = NewFirebaseObj(
+		cfg.Firebase.JsonFilePath,
+		cfg.Firebase.WebApiKey,
+	)
+
+	Sendgrid = NewSendgridObj(
+		cfg.Sendgrid.ApiKey)
+
+	Slack = NewSlackObj(
+		cfg.Slack.AccessToken,
+		cfg.Slack.ChannelID,
+	)
+
+	Google = NewGoogleObj(
+		cfg.Google.ApplicationCredentials,
+	)
+
+	ChatGpt = NewChatGptObj(
+		cfg.ChatGpt.SecretKey,
+	)
+
+	UberSuggest = NewUberSuggestObj(
+		cfg.UberSuggest.Email,
+		cfg.UberSuggest.Password,
+	)
+
+	return nil
+}
+
+type AppObj struct {
+	// AppEnv is the environment of the application.
+	Env            string   `required:"true" split_words:"true"`
+	// AppService is the service of the application.
+	Service        string   `required:"true" split_words:"true"`
+	// AppBatchType is the batch type of the application.
+	BatchType      string   `required:"true" split_words:"true"`
+	// AppPort is the port of the application.
+	Port           int      `required:"true" split_words:"true"`
+	// AppBasicUsers is the basic users of the application.
+	BasicUsers     []string `required:"true" split_words:"true"`
+	// AppBasicPasswords is the basic passwords of the application.
+	BasicPasswords []string `required:"true" split_words:"true"`
+	// AppBasicSecret is the basic secret of the application.
+	BasicSecret    string   `required:"true" split_words:"true"`
+	// AppCorsDomains is the cors domains of the application.
+	CorsDomains    []string `required:"true" split_words:"true"`
+	// AppClientDomain is the client domain of the application.
+	ClientDomain   string   `required:"true" split_words:"true"`
+	// AppPythonDomain is the python domain of the application.
+	PythonDomain   string   `required:"true" split_words:"true"`
+	// AppLogFilePath is the log file path of the application.
+	LogFilePath    string   `required:"true" split_words:"true"`
+}
+
+func NewAppObj(
+	env string,
+	service string,
+	batchType string,
+	port int,
+	basicUsers []string,
+	basicPasswords []string,
+	basicSecret string,
+	corsDomains []string,
+	clientDomain string,
+	pythonDomain string,
+	logFilePath string,
+) AppObj {
+	return AppObj{
+		Env:            env,
+		Service:        service,
+		BatchType:      batchType,
+		Port:           port,
+		BasicUsers:     basicUsers,
+		BasicPasswords: basicPasswords,
+		CorsDomains:    corsDomains,
+		ClientDomain:   clientDomain,
+		PythonDomain:   pythonDomain,
+		LogFilePath:    logFilePath,
+	}
+}
+
+type DbObj struct {
+	// DbHost is the host of the database.
+	Host               string `required:"true" split_words:"true"`
+	// DbPort is the port of the database.
+	Port               int    `required:"true" split_words:"true"`
+	// DbName is the name of the database.
+	Name               string `required:"true" split_words:"true"`
+	// DbUser is the user of the database.
+	User               string `required:"true" split_words:"true"`
+	// DbPass is the pass of the database.
+	Pass               string `required:"true" split_words:"true"`
+	// DbInstanceUnixSocket is the instance unix socket of the database.
+	InstanceUnixSocket string `required:"true" split_words:"true"`
+}
+
+func NewDbObj(
+	host string,
+	port int,
+	name string,
+	user string,
+	pass string,
+	instanceUnixSocket string,
+) DbObj {
+	return DbObj{
+		Host:               host,
+		Port:               port,
+		Name:               name,
+		User:               user,
+		Pass:               pass,
+		InstanceUnixSocket: instanceUnixSocket,
+	}
+}
+
+type FirebaseObj struct {
+	// FirebaseJsonFilePath is the json file path of the firebase.
+	JsonFilePath string `required:"true" split_words:"true"`
+	// FirebaseWebApiKey is the web api key of the firebase.
+	WebApiKey    string `required:"true" split_words:"true"`
+}
+
+func NewFirebaseObj(
+	jsonFilePath string,
+	webApiKey string,
+) FirebaseObj {
+	return FirebaseObj{
+		JsonFilePath: jsonFilePath,
+		WebApiKey:    webApiKey,
+	}
+}
+
+type SendgridObj struct {
+	// SendgridApiKey is the api key of the sendgrid.
+	ApiKey string `required:"true" split_words:"true"`
+}
+
+func NewSendgridObj(
+	apiKey string,
+) SendgridObj {
+	return SendgridObj{
+		ApiKey: apiKey,
+	}
+}
+
+type SlackObj struct {
+	// SlackAccessToken is the access token of the slack.
+	AccessToken string `required:"true" split_words:"true"`
+	// SlackChannelID is the channel id of the slack.
+	ChannelID   string `required:"true" split_words:"true"`
+}
+
+func NewSlackObj(
+	accessToken string,
+	channelID string,
+) SlackObj {
+	return SlackObj{
+		AccessToken: accessToken,
+		ChannelID:   channelID,
+	}
+}
+
+type GoogleObj struct {
+	// GoogleApplicationCredentials is the application credentials of the google.
+	ApplicationCredentials string `required:"true" split_words:"true"`
+}
+
+func NewGoogleObj(
+	applicationCredentials string,
+) GoogleObj {
+	return GoogleObj{
+		ApplicationCredentials: applicationCredentials,
+	}
+}
+
+type ChatGptObj struct {
+	// ChatGptSecretKey is the secret key of the chat gpt.
+	SecretKey string `required:"true" split_words:"true"`
+}
+
+func NewChatGptObj(
+	secretKey string,
+) ChatGptObj {
+	return ChatGptObj{
+		SecretKey: secretKey,
+	}
+}
+
+type UberSuggestObj struct {
+	// UberSuggestEmail is the email of the uber suggest.
+	Email    string `required:"true" split_words:"true"`
+	// UberSuggestPassword is the password of the uber suggest.
+	Password string `required:"true" split_words:"true"`
+}
+
+func NewUberSuggestObj(
+	email string,
+	password string,
+) UberSuggestObj {
+	return UberSuggestObj{
+		Email:    email,
+		Password: password,
+	}
+}

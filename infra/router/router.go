@@ -14,17 +14,8 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	// "github.com/improbable-eng/grpc-web/go/grpcweb"
 )
-
-// type Router struct {
-// 	cfg config.Config
-// }
-
-// func NewRouter(cfg config.Config)  {
-// 	return &Router{
-// 		cfg: cfg,
-// 	}
-// }
 
 func Start() {
 	var (
@@ -42,11 +33,11 @@ func Start() {
 	ctx := context.Background()
 	di.RegisterServiceServer(ctx, s, db, firebase)
 
-	// for grpcurl
+	// for using grpcurl
 	reflection.Register(s)
 
 	go func() {
-		fmt.Printf("start gRPC server, port: %d", config.App.Port)
+		log.Printf("start gRPC server, port: %d", config.App.Port)
 		err = s.Serve(listener)
 		if err != nil {
 			log.Fatalf("failed to serve: %v", err)
@@ -60,6 +51,24 @@ func Start() {
 	s.GracefulStop()
 
 }
+
+// http 
+// // HTTP経由で接続できるようラップする
+// wrappedServer := grpcweb.WrapServer(
+// 	s,
+// 	// CORSの設定
+// 	grpcweb.WithOriginFunc(func(origin string) bool {
+// 		return origin == "http://localhost:3000"
+// 	}),
+// )
+// mux := http.NewServeMux()
+// mux.Handle("/", http.HandlerFunc(wrappedServer.ServeHTTP))
+// // ポート8080で起動
+// hs := &http.Server{
+// 	Addr:    ":8080",
+// 	Handler: mux,
+// }
+// log.Fatal(hs.ListenAndServe())
 
 // r.Engine.HidePort = true
 // r.Engine.HideBanner = true
