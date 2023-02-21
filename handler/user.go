@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	// "github.com/hidenari-yuda/go-grpc-clean/domain/requests"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/responses"
+	// "github.com/hidenari-yuda/go-grpc-clean/domain/responses"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
@@ -30,7 +30,7 @@ func NewUserSercviceServer(userInteractor interactor.UserInteractor) *UserServic
 	}
 }
 
-func (s *UserServiceServer) Create(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
+func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.User, error) {
 
 	fmt.Println("db is:", s.Db)
 	fmt.Println("firebase is :", s.Firebase)
@@ -41,7 +41,7 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.UserRequest) (*p
 	// }
 
 	tx, _ := s.Db.Begin()
-	res, err := s.UserInteractor.Create(req.User)
+	res, err := s.UserInteractor.Create(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, handleError(err)
@@ -49,16 +49,16 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.UserRequest) (*p
 
 	tx.Commit()
 
-	return responses.NewUser(res), nil
+	return res, nil
 
 }
 
-func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserIdRequest) (*pb.UserResponse, error) {
+func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserIdRequest) (*pb.User, error) {
 
 	res, err := s.UserInteractor.GetById(uint(req.Id))
 	if err != nil {
 		return nil, handleError(err)
 	}
 
-	return responses.NewUser(res), nil
+	return res, nil
 }

@@ -10,7 +10,7 @@ type Org struct {
 	Id        uint      `db:"id" json:"id"`
 	Uuid      uuid.UUID `db:"uuid" json:"uuid"`
 	Name      string    `db:"name" json:"name"`
-	Mail      string    `db:"mail" json:"mail"`
+	Email      string    `db:"mail" json:"mail"`
 	Password  string    `db:"password" json:"password"`
 	OrgType   uint      `db:"org_type" json:"org_type"` // 0: guest(default), 1: normal, 2: admin
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
@@ -31,7 +31,7 @@ func NewOrg(
 ) *Org {
 	return &Org{
 		Name:     name,
-		Mail:     mail,
+		Email:     mail,
 		Password: password,
 		OrgType:  orgType,
 	}

@@ -15,6 +15,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -55,11 +56,11 @@ func NewDb() *Db {
 	}
 
 	for {
-		fmt.Println("Trying to connect DB...", url)
+		log.Println("Trying to connect DB...", url)
 		if db, err = sqlx.Connect("mysql", url); err != nil {
-			fmt.Println("Something wrong with connecting DB...", err.Error())
+			log.Println("Something wrong with connecting DB...", err.Error())
 		} else {
-			fmt.Println("Succeeded!")
+			log.Println("Succeeded!")
 			break
 		}
 
@@ -184,7 +185,7 @@ func (d *Db) MigrateUp(dir string) error {
 
 	_, err := migrate.Exec(d.db.DB, "mysql", migrations, migrate.Up)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -197,7 +198,7 @@ func (d *Db) MigrateDown(dir string) error {
 
 	_, err := migrate.Exec(d.db.DB, "mysql", migrations, migrate.Down)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -265,12 +266,12 @@ func (t *Tx) Commit() error {
 	return t.tx.Commit()
 }
 
-func printQuery(prints bool, query string) {
-	if !prints {
-		return
-	}
-	log.Println(query)
-}
+// func printQuery(prints bool, query string) {
+// 	if !prints {
+// 		return
+// 	}
+// 	log.Println(query)
+// }
 
 func debugQueryString(query string, args ...interface{}) string {
 	var buffer bytes.Buffer
@@ -329,13 +330,18 @@ func debugQueryString(query string, args ...interface{}) string {
 				}
 			case null.String:
 				if a.Valid {
-					buffer.WriteString(fmt.Sprintf("%s", a.String))
+					buffer.WriteString(a.String)
 				} else {
 					buffer.WriteString("NULL")
 				}
+			case time.Time:
+				buffer.WriteString(timestamppb.New(a).String())
+			case timestamppb.Timestamp:
+				buffer.WriteString(a.AsTime().String())
 			case null.Time:
 				if a.Valid {
-					buffer.WriteString(fmt.Sprintf("%s", a.Time.String()))
+					time := a.Time
+					buffer.WriteString(timestamppb.New(time).String())
 				} else {
 					buffer.WriteString("NULL")
 				}
@@ -365,9 +371,9 @@ func measureLatency(name, query string, args ...interface{}) func() {
 
 		b, err := json.Marshal(m)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
-		fmt.Println(string(b))
+		log.Println(string(b))
 	}
 }

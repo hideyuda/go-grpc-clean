@@ -25,21 +25,21 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	// create
-	Create(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	// update
-	Update(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
+	Update(ctx context.Context, in *User, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
 	// delete
 	Delete(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*UserBoolResponse, error)
 	// get by id
-	GetById(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	GetById(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*User, error)
 	// get by user_type
-	GetListByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	GetListByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (*User, error)
 	// get list by id list
 	GetUsersByIdList(ctx context.Context, opts ...grpc.CallOption) (UserService_GetUsersByIdListClient, error)
 	// get all
-	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserResponse, error)
+	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*User, error)
 	// SignIn
-	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type userServiceClient struct {
@@ -50,8 +50,8 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) Create(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user.UserService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (c *userServiceClient) Create(ctx context.Context, in *UserRequest, opts ..
 	return out, nil
 }
 
-func (c *userServiceClient) Update(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
+func (c *userServiceClient) Update(ctx context.Context, in *User, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
 	out := new(wrapperspb.BoolValue)
 	err := c.cc.Invoke(ctx, "/user.UserService/Update", in, out, opts...)
 	if err != nil {
@@ -77,8 +77,8 @@ func (c *userServiceClient) Delete(ctx context.Context, in *UserIdRequest, opts 
 	return out, nil
 }
 
-func (c *userServiceClient) GetById(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) GetById(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -86,8 +86,8 @@ func (c *userServiceClient) GetById(ctx context.Context, in *UserIdRequest, opts
 	return out, nil
 }
 
-func (c *userServiceClient) GetListByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) GetListByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetListByType", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func (c *userServiceClient) GetUsersByIdList(ctx context.Context, opts ...grpc.C
 
 type UserService_GetUsersByIdListClient interface {
 	Send(*UserIdListRequest) error
-	CloseAndRecv() (*UserResponse, error)
+	CloseAndRecv() (*User, error)
 	grpc.ClientStream
 }
 
@@ -118,19 +118,19 @@ func (x *userServiceGetUsersByIdListClient) Send(m *UserIdListRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *userServiceGetUsersByIdListClient) CloseAndRecv() (*UserResponse, error) {
+func (x *userServiceGetUsersByIdListClient) CloseAndRecv() (*User, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
-	m := new(UserResponse)
+	m := new(User)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *userServiceClient) GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -138,8 +138,8 @@ func (c *userServiceClient) GetAll(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
-func (c *userServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user.UserService/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -152,21 +152,21 @@ func (c *userServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts 
 // for forward compatibility
 type UserServiceServer interface {
 	// create
-	Create(context.Context, *UserRequest) (*UserResponse, error)
+	Create(context.Context, *User) (*User, error)
 	// update
-	Update(context.Context, *UserRequest) (*wrapperspb.BoolValue, error)
+	Update(context.Context, *User) (*wrapperspb.BoolValue, error)
 	// delete
 	Delete(context.Context, *UserIdRequest) (*UserBoolResponse, error)
 	// get by id
-	GetById(context.Context, *UserIdRequest) (*UserResponse, error)
+	GetById(context.Context, *UserIdRequest) (*User, error)
 	// get by user_type
-	GetListByType(context.Context, *UserTypeRequest) (*UserResponse, error)
+	GetListByType(context.Context, *UserTypeRequest) (*User, error)
 	// get list by id list
 	GetUsersByIdList(UserService_GetUsersByIdListServer) error
 	// get all
-	GetAll(context.Context, *emptypb.Empty) (*UserResponse, error)
+	GetAll(context.Context, *emptypb.Empty) (*User, error)
 	// SignIn
-	SignIn(context.Context, *SignInRequest) (*UserResponse, error)
+	SignIn(context.Context, *SignInRequest) (*User, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -174,28 +174,28 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) Create(context.Context, *UserRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) Create(context.Context, *User) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedUserServiceServer) Update(context.Context, *UserRequest) (*wrapperspb.BoolValue, error) {
+func (UnimplementedUserServiceServer) Update(context.Context, *User) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedUserServiceServer) Delete(context.Context, *UserIdRequest) (*UserBoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedUserServiceServer) GetById(context.Context, *UserIdRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) GetById(context.Context, *UserIdRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedUserServiceServer) GetListByType(context.Context, *UserTypeRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) GetListByType(context.Context, *UserTypeRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByType not implemented")
 }
 func (UnimplementedUserServiceServer) GetUsersByIdList(UserService_GetUsersByIdListServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetUsersByIdList not implemented")
 }
-func (UnimplementedUserServiceServer) GetAll(context.Context, *emptypb.Empty) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) GetAll(context.Context, *emptypb.Empty) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
-func (UnimplementedUserServiceServer) SignIn(context.Context, *SignInRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) SignIn(context.Context, *SignInRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -212,7 +212,7 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 }
 
 func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserRequest)
+	in := new(User)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -224,13 +224,13 @@ func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/user.UserService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Create(ctx, req.(*UserRequest))
+		return srv.(UserServiceServer).Create(ctx, req.(*User))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserRequest)
+	in := new(User)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -242,7 +242,7 @@ func _UserService_Update_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/user.UserService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Update(ctx, req.(*UserRequest))
+		return srv.(UserServiceServer).Update(ctx, req.(*User))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -306,7 +306,7 @@ func _UserService_GetUsersByIdList_Handler(srv interface{}, stream grpc.ServerSt
 }
 
 type UserService_GetUsersByIdListServer interface {
-	SendAndClose(*UserResponse) error
+	SendAndClose(*User) error
 	Recv() (*UserIdListRequest, error)
 	grpc.ServerStream
 }
@@ -315,7 +315,7 @@ type userServiceGetUsersByIdListServer struct {
 	grpc.ServerStream
 }
 
-func (x *userServiceGetUsersByIdListServer) SendAndClose(m *UserResponse) error {
+func (x *userServiceGetUsersByIdListServer) SendAndClose(m *User) error {
 	return x.ServerStream.SendMsg(m)
 }
 

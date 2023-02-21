@@ -3,19 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
-	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/batch"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/router"
 
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
-	"github.com/slack-go/slack"
 )
 
 func init() {
@@ -50,6 +46,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
+
 		// cache := driver.NewRedisCacheImpl(cfg.Redis)
 		// if cfg.App.Env == "local" {
 		// 	firebase := driver.NewFirebaseImpl()
@@ -79,44 +76,44 @@ func main() {
 // 	fmt.Println("test token is :", idToken)
 // }
 
-func customHTTPErrorHandler(err error, c echo.Context) {
-	var (
-		// cfg, _        = config.New()
-		code, message = entity.ErrorInfo(err)
-		statusCode    = strconv.Itoa(code)
-		path          = c.Path()
-		method        = c.Request().Method
-		errText       = err.Error()
-	)
+// func customHTTPErrorHandler(err error, c echo.Context) {
+// 	var (
+// 		// cfg, _        = config.New()
+// 		code, message = entity.ErrorInfo(err)
+// 		statusCode    = strconv.Itoa(code)
+// 		path          = c.Path()
+// 		method        = c.Request().Method
+// 		errText       = err.Error()
+// 	)
 
-	fmt.Println(err)
+// 	fmt.Println(err)
 
-	te := "*開発環境 Error*\n" +
-		">>>status: " + message + "（" + statusCode + "）" + "\n" +
-		"method: " + method + "\n" +
-		"uri: " + path + "\n" +
-		"error: `" + errText + "` \n"
+// 	te := "*開発環境 Error*\n" +
+// 		">>>status: " + message + "（" + statusCode + "）" + "\n" +
+// 		"method: " + method + "\n" +
+// 		"uri: " + path + "\n" +
+// 		"error: `" + errText + "` \n"
 
-	// アクセストークンを使用してクライアントを生成する
-	// https://api.slack.com/apps からトークン取得
-	// 参考: https://risaki-masa.com/how-to-get-api-token-in-slack/
-	tkn := config.Slack.AccessToken
-	chanelID := config.Slack.ChanelID
-	s := slack.New(tkn)
+// 	// アクセストークンを使用してクライアントを生成する
+// 	// https://api.slack.com/apps からトークン取得
+// 	// 参考: https://risaki-masa.com/how-to-get-api-token-in-slack/
+// 	tkn := config.Slack.AccessToken
+// 	chanelID := config.Slack.ChannelID
+// 	s := slack.New(tkn)
 
-	// MsgOptionText() の第二引数に true を設定すると特殊文字をエスケープする
-	_, _, err = s.PostMessage(chanelID, slack.MsgOptionBlocks(
-		&slack.SectionBlock{
-			Type: slack.MBTSection,
-			Text: &slack.TextBlockObject{
-				Type: "mrkdwn",
-				Text: te,
-			},
-		},
-	))
-	if err != nil {
-		fmt.Println(err)
-	}
+// 	// MsgOptionText() の第二引数に true を設定すると特殊文字をエスケープする
+// 	_, _, err = s.PostMessage(chanelID, slack.MsgOptionBlocks(
+// 		&slack.SectionBlock{
+// 			Type: slack.MBTSection,
+// 			Text: &slack.TextBlockObject{
+// 				Type: "mrkdwn",
+// 				Text: te,
+// 			},
+// 		},
+// 	))
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	c.Logger().Error(err)
-}
+// 	c.Logger().Error(err)
+// }
