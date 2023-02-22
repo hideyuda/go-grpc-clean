@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 
 	// "github.com/hidenari-yuda/go-grpc-clean/domain/requests"
 	// "github.com/hidenari-yuda/go-grpc-clean/domain/responses"
@@ -30,17 +29,14 @@ func NewUserSercviceServer(userInteractor interactor.UserInteractor) *UserServic
 	}
 }
 
+// create user
 func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.User, error) {
 
-	fmt.Println("db is:", s.Db)
-	fmt.Println("firebase is :", s.Firebase)
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, handleError(err)
+	}
 
-	// input, err := requests.NewUser(req)
-	// if err != nil {
-	// 	return nil, handleError(err)
-	// }
-
-	tx, _ := s.Db.Begin()
 	res, err := s.UserInteractor.Create(req)
 	if err != nil {
 		tx.Rollback()
@@ -52,6 +48,45 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.User,
 	return res, nil
 
 }
+
+// update user
+// func (s *UserServiceServer) Update(ctx context.Context, req *pb.User) (*pb.User, error) {
+
+// 	tx, err := s.Db.Begin()
+// 	if err != nil {
+// 		return nil, handleError(err)
+// 	}
+
+// 	res, err := s.UserInteractor.Update(req)
+// 	if err != nil {
+// 		tx.Rollback()
+// 		return nil, handleError(err)
+// 	}
+
+// 	tx.Commit()
+
+// 	return res, nil
+// }
+
+// delete user
+// func (s *UserServiceServer) Delete(ctx context.Context, req *pb.UserIdRequest) (*pb.User, error) {
+
+// 	tx, err := s.Db.Begin()
+// 	if err != nil {
+// 		return nil, handleError(err)
+// 	}
+
+// 	// res, err := s.UserInteractor.Delete(uint(req.Id))
+// 	// if err != nil {
+// 	// 	tx.Rollback()
+// 	// 	return nil, handleError(err)
+// 	// }
+
+// 	tx.Commit()
+
+// 	return res, nil
+// }
+
 
 func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserIdRequest) (*pb.User, error) {
 

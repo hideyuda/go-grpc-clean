@@ -21,12 +21,12 @@ func NewUser(res *entity.User) *pb.User {
 	}
 }
 
-func NewUserResponse(res *pb.User) *pb.UserResponse {
-	return &pb.UserResponse{
-		Error: false,
-		User:  res,
-	}
-}
+// func NewUserResponse(res *pb.User) *pb.UserResponse {
+// 	return &pb.UserResponse{
+// 		Error: false,
+// 		User:  res,
+// 	}
+// }
 
 // func NewUserList (res []*pb.User) *pb.UserListResponse {
 // 	return &pb.UserListResponse{

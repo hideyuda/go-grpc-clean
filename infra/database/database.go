@@ -14,6 +14,7 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
 	"github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx/reflectx"
 	migrate "github.com/rubenv/sql-migrate"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gopkg.in/guregu/null.v4"
@@ -23,6 +24,7 @@ import (
 type Db struct {
 	db          *sqlx.DB
 	printsQuery bool
+	mapper 		*reflectx.Mapper
 }
 
 func NewDb() *Db {
@@ -126,6 +128,9 @@ func (d *Db) Get(name string, dest interface{}, query string, args ...interface{
 		defer measureLatency(name, query, args...)()
 	}
 
+	// map json tag and snake case
+	d.db.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
+
 	err := d.db.Get(dest, query, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -140,6 +145,10 @@ func (d *Db) Select(name string, dest interface{}, query string, args ...interfa
 	if d.printsQuery {
 		defer measureLatency(name, query, args...)()
 	}
+	
+	// map json tag and snake case
+	d.db.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
+
 	err := d.db.Select(dest, query, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
