@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
 )
 
@@ -26,7 +26,7 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 	now := time.Now()
 
 	_, err := r.executer.Exec(
-		r.Name+"SignUp",
+		r.Name+"Create",
 		`INSERT INTO users (
 			uuid,
 			firebase_id,
@@ -128,11 +128,13 @@ func (r *UserRepositoryImpl) UpdateColumnInt(lineUserId, column string, value in
 /***** Get *****/
 func (r *UserRepositoryImpl) GetById(id uint) (*pb.User, error) {
 	var (
+		// userEntity entity.User
 		user pb.User
 	)
 
 	err := r.executer.Get(
 		r.Name+"GetById",
+		// &userEntity,
 		&user,
 		"SELECT * FROM users WHERE id = ?",
 		id,
