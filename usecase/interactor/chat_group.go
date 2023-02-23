@@ -1,7 +1,7 @@
 package interactor
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
@@ -26,9 +26,9 @@ type ChatGroupInteractor interface {
 }
 
 type ChatGroupInteractorImpl struct {
-	firebase usecase.Firebase
+	firebase            usecase.Firebase
 	chatGroupRepository usecase.ChatGroupRepository
-	chatUserRepository	usecase.ChatUserRepository
+	chatUserRepository  usecase.ChatUserRepository
 }
 
 func NewChatGroupInteractorImpl(
@@ -37,7 +37,7 @@ func NewChatGroupInteractorImpl(
 	cuR usecase.ChatUserRepository,
 ) ChatGroupInteractor {
 	return &ChatGroupInteractorImpl{
-		firebase: fb,
+		firebase:            fb,
 		chatGroupRepository: cgR,
 		chatUserRepository:  cuR,
 	}
@@ -85,7 +85,7 @@ func (i *ChatGroupInteractorImpl) GetById(id uint) (*pb.ChatGroup, error) {
 	// ユーザー登録
 	chatGroup, err = i.chatGroupRepository.GetById(id)
 	if err != nil {
-		fmt.Println("error is:", err)
+		log.Println("error is:", err)
 		return chatGroup, err
 	}
 
@@ -101,7 +101,7 @@ func (i *ChatGroupInteractorImpl) GetListByUserId(userId uint) ([]*pb.ChatGroup,
 	// ユーザー登録
 	chatGroups, err = i.chatGroupRepository.GetListByUserId(userId)
 	if err != nil {
-		fmt.Println("error is:", err)
+		log.Println("error is:", err)
 		return chatGroups, err
 	}
 

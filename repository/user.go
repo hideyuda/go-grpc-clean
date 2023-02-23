@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/utils"
@@ -84,7 +85,7 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 
 	if err != nil {
 		err = fmt.Errorf("failed to update user: %w", err)
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 
@@ -161,7 +162,7 @@ func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*pb.User, error
 
 	if err != nil {
 		err = fmt.Errorf("failed to get user by firebase id: %w", err)
-		fmt.Println(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -182,7 +183,7 @@ func (r *UserRepositoryImpl) GetAll() ([]*pb.User, error) {
 
 	if err != nil {
 		err = fmt.Errorf("failed to get all users: %w", err)
-		fmt.Println(err)
+		log.Println(err)
 		return nil, err
 	}
 

@@ -1,7 +1,7 @@
 package interactor
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
@@ -29,7 +29,7 @@ type UserInteractor interface {
 }
 
 type UserInteractorImpl struct {
-	firebase usecase.Firebase
+	firebase       usecase.Firebase
 	userRepository usecase.UserRepository
 }
 
@@ -38,7 +38,7 @@ func NewUserInteractorImpl(
 	uR usecase.UserRepository,
 ) UserInteractor {
 	return &UserInteractorImpl{
-		firebase: fb,
+		firebase:       fb,
 		userRepository: uR,
 	}
 }
@@ -88,7 +88,7 @@ func (i *UserInteractorImpl) GetById(id uint) (*pb.User, error) {
 	// ユーザー登録
 	user, err = i.userRepository.GetById(id)
 	if err != nil {
-		fmt.Println("error is:", err)
+		log.Println("error is:", err)
 		return user, err
 	}
 
@@ -107,8 +107,8 @@ func (i *UserInteractorImpl) SignIn(param *pb.SignInRequest) (*pb.User, error) {
 		return user, err
 	}
 
-	fmt.Println("exported firebaseToken is:", param.Token)
-	fmt.Println("exported firebaseId is:", firebaseId)
+	log.Println("exported firebaseToken is:", param.Token)
+	log.Println("exported firebaseId is:", firebaseId)
 
 	// ユーザー登録
 	user, err = i.userRepository.GetByFirebaseId(firebaseId)

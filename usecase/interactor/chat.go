@@ -3,6 +3,7 @@ package interactor
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
@@ -93,7 +94,7 @@ func (i *ChatInteractorImpl) GetById(id uint) (*pb.Chat, error) {
 	// ユーザー登録
 	chat, err = i.chatRepository.GetById(id)
 	if err != nil {
-		fmt.Println("error is:", err)
+		log.Println("error is:", err)
 		return chat, err
 	}
 
@@ -109,7 +110,7 @@ func (i *ChatInteractorImpl) GetListByGroupId(groupId uint) ([]*pb.Chat, error) 
 	// ユーザー登録
 	chats, err = i.chatRepository.GetListByGroupId(groupId)
 	if err != nil {
-		fmt.Println("error is:", err)
+		log.Println("error is:", err)
 		return chats, err
 	}
 

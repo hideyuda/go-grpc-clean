@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"log"
 
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
@@ -13,19 +14,19 @@ import (
 type ChatServiceServer struct {
 	pb.UnimplementedChatServiceServer
 	ChatInteractor interactor.ChatInteractor
-	Db                  *database.Db
-	Firebase            usecase.Firebase
+	Db             *database.Db
+	Firebase       usecase.Firebase
 }
 
 func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ChatServiceServer {
 	return &ChatServiceServer{
 		ChatInteractor: chatInteractor,
-		Db:                  database.NewDb(),
-		Firebase:            driver.NewFirebaseImpl(),
+		Db:             database.NewDb(),
+		Firebase:       driver.NewFirebaseImpl(),
 	}
 }
 
-// create chat 
+// create chat
 func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.Chat, error) {
 
 	tx, err := s.Db.Begin()
@@ -43,7 +44,7 @@ func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.Chat,
 	return res, nil
 }
 
-// update chat 
+// update chat
 func (s *ChatServiceServer) Update(ctx context.Context, req *pb.Chat) (*pb.ChatBoolResponse, error) {
 
 	tx, err := s.Db.Begin()
@@ -61,7 +62,7 @@ func (s *ChatServiceServer) Update(ctx context.Context, req *pb.Chat) (*pb.ChatB
 	return &pb.ChatBoolResponse{Error: res}, nil
 }
 
-// delete chat 
+// delete chat
 func (s *ChatServiceServer) Delete(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatBoolResponse, error) {
 
 	tx, err := s.Db.Begin()
@@ -101,34 +102,33 @@ func (s *ChatServiceServer) GetListByGroupId(ctx context.Context, req *pb.ChatId
 	return &pb.ChatList{ChatList: res}, nil
 }
 
-// func (s *ChatServiceServer) GetStream(req *pb.GetChatStreamRequest, server pb.ChatService_GetStreamServer) error {
-// 	fmt.Println("GetStream")
-// 	// h := di.InitializeChatHandler(s.Db, s.Firebase)
-// 	// err := h.GetStream(req *pb.GetStreamRequest, server pb.ChatService_GetChatStreamServer)
+func (s *ChatServiceServer) GetStream(req *pb.GetChatStreamRequest, server pb.ChatService_GetStreamServer) error {
 
-// 	ctx, cancel := context.WithCancel(context.Background())
-// 	defer cancel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-// 	stream := make(chan entity.Chat)
+	stream := make(chan pb.Chat)
 
-// 	go func() {
-// 		err := s.ChatInteractor.GetStream(ctx, stream)
-// 		if err != nil {
-// 			fmt.Println(err)
-// 		}
-// 	}()
+	go func() {
+		err := s.ChatInteractor.GetStream(ctx, stream)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
-// 	for {
-// 		v := <-stream
-// 		createdAt := timestamppb.New(v.CreatedAt)
-// 		if err := server.Send(&pb.ChatResponse{
-// 			Chat: &pb.Chat{
-// 				From:      uint32(v.From),
-// 				Content:   v.Content,
-// 				CreatedAt: createdAt,
-// 			},
-// 		}); err != nil {
-// 			return err
-// 		}
-// 	}
-// }
+	for {
+		v := <-stream
+
+		// createdAt := timestamppb.New(v.CreatedAt)
+		if err := server.Send(&pb.Chat{
+			From:      v.From,
+			To:        v.To,
+			Content:   v.Content,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		},
+		); err != nil {
+			return err
+		}
+	}
+}
