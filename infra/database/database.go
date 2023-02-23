@@ -24,7 +24,6 @@ import (
 type Db struct {
 	db          *sqlx.DB
 	printsQuery bool
-	mapper 		*reflectx.Mapper
 }
 
 func NewDb() *Db {

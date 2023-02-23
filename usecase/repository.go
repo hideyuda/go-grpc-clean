@@ -9,11 +9,14 @@ type UserRepository interface {
 
 	// Update
 	Update(param *pb.User) error
-	UpdateColumnStr(lineUserId, column, value string) error
-	UpdateColumnInt(lineUserId, column string, value int) error
+
+	// Delete
+	Delete(id uint) error
 
 	// Get
 	GetById(id uint) (*pb.User, error)
+
+	// auth
 	SignIn(mail, password string) (user *pb.User, err error)
 	GetByFirebaseId(firebaseId string) (*pb.User, error)
 

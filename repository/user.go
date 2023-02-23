@@ -21,7 +21,7 @@ func NewUserRepositoryImpl(ex SQLExecuter) usecase.UserRepository {
 	}
 }
 
-/***** Create *****/
+// create
 func (r *UserRepositoryImpl) Create(param *pb.User) error {
 	now := time.Now()
 
@@ -63,7 +63,7 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 	return nil
 }
 
-/***** Update *****/
+// update
 func (r *UserRepositoryImpl) Update(user *pb.User) error {
 	_, err := r.executer.Exec(
 		r.Name+"Update",
@@ -91,41 +91,22 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 	return nil
 }
 
-func (r *UserRepositoryImpl) UpdateColumnStr(lineUserId, column, value string) error {
+// delete
+func (r *UserRepositoryImpl) Delete(id uint) error {
 	_, err := r.executer.Exec(
-		r.Name+"UpdateColumn",
-		"UPDATE users SET "+column+" = ? WHERE line_user_id = ?",
-		value,
-		lineUserId,
+		r.Name+"Delete",
+		"DELETE FROM users WHERE id = ?",
+		id,
 	)
 
 	if err != nil {
-		err = fmt.Errorf("failed to update user column: %w", err)
-		fmt.Println(err)
 		return err
 	}
 
 	return nil
 }
 
-func (r *UserRepositoryImpl) UpdateColumnInt(lineUserId, column string, value int) error {
-	_, err := r.executer.Exec(
-		r.Name+"UpdateColumn",
-		"UPDATE users SET "+column+" = ? WHERE line_user_id = ?",
-		value,
-		lineUserId,
-	)
-
-	if err != nil {
-		err = fmt.Errorf("failed to update user column: %w", err)
-		fmt.Println(err)
-		return err
-	}
-
-	return nil
-}
-
-/***** Get *****/
+// get
 func (r *UserRepositoryImpl) GetById(id uint) (*pb.User, error) {
 	var (
 		// userEntity entity.User
@@ -147,6 +128,8 @@ func (r *UserRepositoryImpl) GetById(id uint) (*pb.User, error) {
 	return &user, nil
 }
 
+// auth
+// SignIn
 func (r *UserRepositoryImpl) SignIn(email, password string) (user *pb.User, err error) {
 	err = r.executer.Get(
 		r.Name+"SignIn",
@@ -163,6 +146,7 @@ func (r *UserRepositoryImpl) SignIn(email, password string) (user *pb.User, err 
 	return user, nil
 }
 
+// getByFirebaseId
 func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*pb.User, error) {
 	var (
 		user pb.User
@@ -183,6 +167,7 @@ func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*pb.User, error
 	return &user, nil
 }
 
+// admin
 // getAll
 func (r *UserRepositoryImpl) GetAll() ([]*pb.User, error) {
 	var (
