@@ -1,79 +1,112 @@
 package interactor
 
-// import (
-// 	"fmt"
+import (
+	"fmt"
 
-// 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-// 	"github.com/hidenari-yuda/go-grpc-clean/usecase"
-// )
+	"github.com/hidenari-yuda/go-grpc-clean/pb"
+	"github.com/hidenari-yuda/go-grpc-clean/usecase"
+)
 
-// type ChatGroupInteractor interface {
-// 	// Gest API
-// 	// Create
-// 	Create(ChatGroup *entity.ChatGroup) (*entity.ChatGroup, error)
+type ChatGroupInteractor interface {
+	// Gest API
+	// Create
+	Create(ChatGroup *pb.ChatGroup) (*pb.ChatGroup, error)
 
-// 	// Update
-// 	Update(ChatGroup *entity.ChatGroup) (*entity.ChatGroup, error)
+	// Update
+	Update(ChatGroup *pb.ChatGroup) (bool, error)
 
-// 	// Get
-// 	GetById(id uint) (*entity.ChatGroup, error)
-// }
+	// Delete
+	Delete(id uint) (bool, error)
 
-// type ChatGroupInteractorImpl struct {
-// 	firebase usecase.Firebase
-// 	// chatGroupRepository      usecase.ChatGroupRepository
-// 	chatGroupRepository usecase.ChatGroupRepository
-// 	// chatGroupUserRepository  usecase.ChatGroupRepository
-// }
+	// Get
+	GetById(id uint) (*pb.ChatGroup, error)
 
-// func NewChatGroupInteractorImpl(
-// 	fb usecase.Firebase,
-// 	// cR usecase.ChatGroupRepository,
-// 	cgR usecase.ChatGroupRepository,
-// 	// cuR usecase.ChatUserRepository,
-// ) ChatGroupInteractor {
-// 	return &ChatGroupInteractorImpl{
-// 		firebase: fb,
-// 		// chatRepository:      cR,
-// 		chatGroupRepository: cgR,
-// 		// chatUserRepository:  cuR,
-// 	}
-// }
+	// get list by user id
+	GetListByUserId(userId uint) ([]*pb.ChatGroup, error)
+}
 
-// func (i *ChatGroupInteractorImpl) Create(chatGroup *entity.ChatGroup) (*entity.ChatGroup, error) {
+type ChatGroupInteractorImpl struct {
+	firebase usecase.Firebase
+	// chatGroupRepository      usecase.ChatGroupRepository
+	chatGroupRepository usecase.ChatGroupRepository
+	// chatGroupUserRepository  usecase.ChatGroupRepository
+}
 
-// 	// ユーザー登録
-// 	err := i.chatGroupRepository.Create(chatGroup)
-// 	if err != nil {
-// 		return chatGroup, err
-// 	}
+func NewChatGroupInteractorImpl(
+	fb usecase.Firebase,
+	// cR usecase.ChatGroupRepository,
+	cgR usecase.ChatGroupRepository,
+	// cuR usecase.ChatUserRepository,
+) ChatGroupInteractor {
+	return &ChatGroupInteractorImpl{
+		firebase: fb,
+		// chatRepository:      cR,
+		chatGroupRepository: cgR,
+		// chatUserRepository:  cuR,
+	}
+}
 
-// 	return chatGroup, nil
-// }
+func (i *ChatGroupInteractorImpl) Create(chatGroup *pb.ChatGroup) (*pb.ChatGroup, error) {
 
-// func (i *ChatGroupInteractorImpl) Update(chatGroup *entity.ChatGroup) (*entity.ChatGroup, error) {
+	// ユーザー登録
+	err := i.chatGroupRepository.Create(chatGroup)
+	if err != nil {
+		return chatGroup, err
+	}
 
-// 	// ユーザー登録
-// 	err := i.chatGroupRepository.Update(chatGroup)
-// 	if err != nil {
-// 		return chatGroup, err
-// 	}
+	return chatGroup, nil
+}
 
-// 	return chatGroup, nil
-// }
+func (i *ChatGroupInteractorImpl) Update(chatGroup *pb.ChatGroup) (bool, error) {
 
-// func (i *ChatGroupInteractorImpl) GetById(id uint) (*entity.ChatGroup, error) {
-// 	var (
-// 		chatGroup *entity.ChatGroup
-// 		err       error
-// 	)
+	// ユーザー登録
+	err := i.chatGroupRepository.Update(chatGroup)
+	if err != nil {
+		return false, err
+	}
 
-// 	// ユーザー登録
-// 	chatGroup, err = i.chatGroupRepository.GetById(id)
-// 	if err != nil {
-// 		fmt.Println("error is:", err)
-// 		return chatGroup, err
-// 	}
+	return true, nil
+}
 
-// 	return chatGroup, nil
-// }
+func (i *ChatGroupInteractorImpl) Delete(id uint) (bool, error) {
+
+	// ユーザー登録
+	err := i.chatGroupRepository.Delete(id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (i *ChatGroupInteractorImpl) GetById(id uint) (*pb.ChatGroup, error) {
+	var (
+		chatGroup *pb.ChatGroup
+		err       error
+	)
+
+	// ユーザー登録
+	chatGroup, err = i.chatGroupRepository.GetById(id)
+	if err != nil {
+		fmt.Println("error is:", err)
+		return chatGroup, err
+	}
+
+	return chatGroup, nil
+}
+
+func (i *ChatGroupInteractorImpl) GetListByUserId(userId uint) ([]*pb.ChatGroup, error) {
+	var (
+		chatGroups []*pb.ChatGroup
+		err        error
+	)
+
+	// ユーザー登録
+	chatGroups, err = i.chatGroupRepository.GetListByUserId(userId)
+	if err != nil {
+		fmt.Println("error is:", err)
+		return chatGroups, err
+	}
+
+	return chatGroups, nil
+}

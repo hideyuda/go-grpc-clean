@@ -24,33 +24,36 @@ type UserRepository interface {
 	GetAll() ([]*pb.User, error)
 }
 
-// type ChatGroupRepository interface {
-// 	// Gest API
-// 	// Create
-// 	Create(param *pb.ChatGroup) error
+type ChatGroupRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.ChatGroup) error
 
-// 	// Update
-// 	Update(param *pb.ChatGroup) error
+	// Update
+	Update(param *pb.ChatGroup) error
 
-// 	// Delete
-// 	Delete(id uint) error
+	// Delete
+	Delete(id uint) error
 
-// 	// Get
-// 	GetById(id uint) (*pb.ChatGroup, error)
-// }
+	// Get
+	GetById(id uint) (*pb.ChatGroup, error)
 
-// type ChatUserRepository interface {
-// 	// Gest API
-// 	// Create
-// 	Create(param *pb.ChatUser) error
+	// get list by user id
+	GetListByUserId(userId uint) ([]*pb.ChatGroup, error)
+}
 
-// 	// Delete
-// 	Delete(id uint) error
+type ChatUserRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.ChatUser) error
 
-// 	// Get
-// 	GetById(id uint) (*pb.ChatUser, error)
-// 	GetListByGroupId(groupId uint) ([]*pb.ChatUser, error)
-// }
+	// Delete
+	Delete(id uint) error
+
+	// Get
+	GetById(id uint) (*pb.ChatUser, error)
+	GetListByGroupId(groupId uint) ([]*pb.ChatUser, error)
+}
 
 type ChatRepository interface {
 	// Gest API
