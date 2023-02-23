@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/hidenari-yuda/go-grpc-clean/infra/database"
 	"github.com/hidenari-yuda/go-grpc-clean/infra/driver"
 	"github.com/hidenari-yuda/go-grpc-clean/pb"
@@ -8,79 +10,96 @@ import (
 	"github.com/hidenari-yuda/go-grpc-clean/usecase/interactor"
 )
 
-// import (
-// 	"context"
-// 	"fmt"
-
-// 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
-// 	"google.golang.org/protobuf/types/known/timestamppb"
-
-// 	"github.com/hidenari-yuda/go-grpc-clean/pb"
-// )
-
 type ChatServiceServer struct {
 	pb.UnimplementedChatServiceServer
 	ChatInteractor interactor.ChatInteractor
-	Db             *database.Db
-	Firebase       usecase.Firebase
+	Db                  *database.Db
+	Firebase            usecase.Firebase
 }
 
 func NewChatSercviceServer(chatInteractor interactor.ChatInteractor) *ChatServiceServer {
 	return &ChatServiceServer{
 		ChatInteractor: chatInteractor,
-		Db:             database.NewDb(),
-		Firebase:       driver.NewFirebaseImpl(),
+		Db:                  database.NewDb(),
+		Firebase:            driver.NewFirebaseImpl(),
 	}
 }
 
-// func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.ChatResponse, error) {
-// 	// Convert context.Context to echo.Context in gRPC server
-// 	fmt.Println("Create")
-// 	input := &entity.Chat{
-// 		From:    uint(req.From),
-// 		Content: req.Content,
-// 	}
+// create chat 
+func (s *ChatServiceServer) Create(ctx context.Context, req *pb.Chat) (*pb.Chat, error) {
 
-// 	tx, _ := s.Db.Begin()
-// 	res, err := s.ChatInteractor.Create(input)
-// 	if err != nil {
-// 		tx.Rollback()
-// 		return nil, err
-// 	}
-// 	tx.Commit()
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &pb.ChatResponse{
-// 		Chat: &pb.Chat{
-// 			Id:        uint32(res.Id),
-// 			From:      uint32(res.From),
-// 			Content:   res.Content,
-// 			CreatedAt: timestamppb.New(res.CreatedAt),
-// 		},
-// 	}, nil
-// }
+	res, err := s.ChatInteractor.Create(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
 
-// func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.GetChatByIdRequest) (*pb.ChatResponse, error) {
-// 	fmt.Println("Get")
+	return res, nil
+}
 
-// 	// var (
-// 	// 	db       = database.NewDb()
-// 	// 	firebase = driver.NewFirebaseImpl()
-// 	// )
+// update chat 
+func (s *ChatServiceServer) Update(ctx context.Context, req *pb.Chat) (*pb.ChatBoolResponse, error) {
 
-// 	res, err := s.ChatInteractor.GetById(uint(req.Id))
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &pb.ChatResponse{
-// 		Chat: &pb.Chat{
-// 			Id:        uint32(res.Id),
-// 			From:      uint32(res.From),
-// 			Content:   res.Content,
-// 			CreatedAt: timestamppb.New(res.CreatedAt),
-// 		},
-// 	}, nil
-// }
+	res, err := s.ChatInteractor.Update(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
+
+	return &pb.ChatBoolResponse{Error: res}, nil
+}
+
+// delete chat 
+func (s *ChatServiceServer) Delete(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatBoolResponse, error) {
+
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.ChatInteractor.Delete(uint(req.Id))
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
+
+	return &pb.ChatBoolResponse{Error: res}, nil
+}
+
+// get chat  by id
+func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequest) (*pb.Chat, error) {
+
+	res, err := s.ChatInteractor.GetById(uint(req.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// get chat  by user id
+func (s *ChatServiceServer) GetListByGroupId(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatList, error) {
+
+	res, err := s.ChatInteractor.GetListByGroupId(uint(req.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ChatList{ChatList: res}, nil
+}
 
 // func (s *ChatServiceServer) GetStream(req *pb.GetChatStreamRequest, server pb.ChatService_GetStreamServer) error {
 // 	fmt.Println("GetStream")

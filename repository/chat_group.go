@@ -116,7 +116,12 @@ func (r *ChatGroupRepositoryImpl) GetListByUserId(userId uint) (ChatGroups []*pb
 	err = r.executer.Select(
 		r.Name+"GetListByUserId",
 		&ChatGroups,
-		"SELECT * FROM chat_groups WHERE user_id = ?",
+		`
+		SELECT * 
+		FROM chat_groups 
+		WHERE user_id = ? AND is_deleted = ?
+		ORDER BY id DESC
+		`,
 		userId,
 	)
 

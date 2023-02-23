@@ -27,22 +27,19 @@ type ChatGroupInteractor interface {
 
 type ChatGroupInteractorImpl struct {
 	firebase usecase.Firebase
-	// chatGroupRepository      usecase.ChatGroupRepository
 	chatGroupRepository usecase.ChatGroupRepository
-	// chatGroupUserRepository  usecase.ChatGroupRepository
+	chatUserRepository	usecase.ChatUserRepository
 }
 
 func NewChatGroupInteractorImpl(
 	fb usecase.Firebase,
-	// cR usecase.ChatGroupRepository,
 	cgR usecase.ChatGroupRepository,
-	// cuR usecase.ChatUserRepository,
+	cuR usecase.ChatUserRepository,
 ) ChatGroupInteractor {
 	return &ChatGroupInteractorImpl{
 		firebase: fb,
-		// chatRepository:      cR,
 		chatGroupRepository: cgR,
-		// chatUserRepository:  cuR,
+		chatUserRepository:  cuR,
 	}
 }
 

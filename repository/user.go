@@ -95,7 +95,8 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 func (r *UserRepositoryImpl) Delete(id uint) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
-		"DELETE FROM users WHERE id = ?",
+		"UPDATE users SET is_deleted = ? WHERE id = ?",
+		true,
 		id,
 	)
 
