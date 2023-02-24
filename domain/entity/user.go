@@ -19,7 +19,7 @@ type User struct {
 
 	// relative to other tables
 	// Org_Id     uint        `db:"org_id" json:"org_id"`
-	ChatGroups []ChatGroup `db:"chat_groups" json:"chat_groups"`
+	// ChatGroups []ChatGroup `db:"chat_groups" json:"chat_groups"`
 
 	Medias   []Media   `db:"medias" json:"medias"`
 	Articles []Article `db:"articles" json:"articles"`
