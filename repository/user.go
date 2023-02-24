@@ -111,13 +111,11 @@ func (r *UserRepositoryImpl) Delete(id uint) error {
 // get
 func (r *UserRepositoryImpl) GetById(id uint) (*pb.User, error) {
 	var (
-		// userEntity entity.User
 		user pb.User
 	)
 
 	err := r.executer.Get(
 		r.Name+"GetById",
-		// &userEntity,
 		&user,
 		"SELECT * FROM users WHERE id = ?",
 		id,

@@ -31,3 +31,5 @@ request.http
 *.mod
 
 *.sum
+
+*.pem

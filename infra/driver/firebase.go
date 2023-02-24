@@ -188,6 +188,37 @@ func (d *FirebaseImpl) UpdatePassword(password, uid string) error {
 	return err
 }
 
+// create chat
+func (d *FirebaseImpl) CreateChat(ctx context.Context, chat *pb.Chat) error {
+	_, err := d.firestore.Collection("chat").Doc(fmt.Sprint(chat.Id)).Set(ctx, chat)
+	if err != nil {
+		return fmt.Errorf("failed to chatRepositoryImpl.CreateChat, firestore.Collection: %s", err)
+	}
+	return nil
+}
+
+// update chat
+func (d *FirebaseImpl) UpdateChat(ctx context.Context, chat *pb.Chat) error {
+	_, err := d.firestore.Collection("chat").Doc(fmt.Sprint(chat.Id)).Set(ctx, chat)
+	if err != nil {
+		return fmt.Errorf("failed to chatRepositoryImpl.UpdateChat, firestore.Collection: %s", err)
+	}
+	return nil
+}
+
+// get chat
+func (d *FirebaseImpl) GetChatById(ctx context.Context, id int64) (*pb.Chat, error) {
+	chat := pb.Chat{}
+	doc, err := d.firestore.Collection("chat").Doc(fmt.Sprint(id)).Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChat, firestore.Collection: %s", err)
+	}
+	if err := doc.DataTo(&chat); err != nil {
+		return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChat, doc.DataTo: %s", err)
+	}
+	return &chat, nil
+}
+
 // Listen はchatコレクションのリアルタイムアップデートを確認する処理です
 //  https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots
 func (d *FirebaseImpl) GetChatStream(ctx context.Context, stream chan<- pb.Chat) error {

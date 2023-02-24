@@ -73,3 +73,66 @@ type ChatUserRepository interface {
 
 	GetListByGroupId(groupId uint) ([]*pb.ChatUser, error)
 }
+
+type MediaRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Media) error
+
+	// Update
+	Update(param *pb.Media) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.Media, error)
+
+	// get list by user id
+	GetListByUserId(userId int64) ([]*pb.Media, error)
+
+	// get list by type
+	GetListByType(mediaType int64) ([]*pb.Media, error)
+
+	// get all
+	GetAll() ([]*pb.Media, error)
+}
+
+type KeywordRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Keyword) error
+
+	// Update
+	Update(param *pb.Keyword) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.Keyword, error)
+
+	// get list by user id
+	GetListByMediaId(mediaId int64) ([]*pb.Keyword, error)
+}
+
+type ScriptRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Script) error
+
+	// Update
+	Update(param *pb.Script) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.Script, error)
+
+	// get list by media id
+	GetListByMediaId(mediaId int64) ([]*pb.Script, error)
+
+	// get all
+	GetAll() ([]*pb.Script, error)
+}

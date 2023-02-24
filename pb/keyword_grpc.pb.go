@@ -22,12 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KeywordServiceClient interface {
-	Create(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*KeywordResponse, error)
-	CreateByKeyword(ctx context.Context, in *CreateByKeywordRequest, opts ...grpc.CallOption) (*KeywordResponse, error)
-	Update(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*KeywordResponse, error)
+	// Create
+	Create(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*Keyword, error)
+	// Update
+	Update(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*Keyword, error)
 	// Get
-	GetById(ctx context.Context, in *GetKeywordByIdRequest, opts ...grpc.CallOption) (*KeywordResponse, error)
-	GetStream(ctx context.Context, in *GetKeywordStreamRequest, opts ...grpc.CallOption) (KeywordService_GetStreamClient, error)
+	GetById(ctx context.Context, in *KeywordIdRequest, opts ...grpc.CallOption) (*Keyword, error)
+	GetListByChannel(ctx context.Context, in *KeywordIdRequest, opts ...grpc.CallOption) (*KeywordList, error)
 }
 
 type keywordServiceClient struct {
@@ -38,8 +39,8 @@ func NewKeywordServiceClient(cc grpc.ClientConnInterface) KeywordServiceClient {
 	return &keywordServiceClient{cc}
 }
 
-func (c *keywordServiceClient) Create(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*KeywordResponse, error) {
-	out := new(KeywordResponse)
+func (c *keywordServiceClient) Create(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*Keyword, error) {
+	out := new(Keyword)
 	err := c.cc.Invoke(ctx, "/keyword.KeywordService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -47,17 +48,8 @@ func (c *keywordServiceClient) Create(ctx context.Context, in *Keyword, opts ...
 	return out, nil
 }
 
-func (c *keywordServiceClient) CreateByKeyword(ctx context.Context, in *CreateByKeywordRequest, opts ...grpc.CallOption) (*KeywordResponse, error) {
-	out := new(KeywordResponse)
-	err := c.cc.Invoke(ctx, "/keyword.KeywordService/CreateByKeyword", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *keywordServiceClient) Update(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*KeywordResponse, error) {
-	out := new(KeywordResponse)
+func (c *keywordServiceClient) Update(ctx context.Context, in *Keyword, opts ...grpc.CallOption) (*Keyword, error) {
+	out := new(Keyword)
 	err := c.cc.Invoke(ctx, "/keyword.KeywordService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,8 +57,8 @@ func (c *keywordServiceClient) Update(ctx context.Context, in *Keyword, opts ...
 	return out, nil
 }
 
-func (c *keywordServiceClient) GetById(ctx context.Context, in *GetKeywordByIdRequest, opts ...grpc.CallOption) (*KeywordResponse, error) {
-	out := new(KeywordResponse)
+func (c *keywordServiceClient) GetById(ctx context.Context, in *KeywordIdRequest, opts ...grpc.CallOption) (*Keyword, error) {
+	out := new(Keyword)
 	err := c.cc.Invoke(ctx, "/keyword.KeywordService/GetById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -74,48 +66,26 @@ func (c *keywordServiceClient) GetById(ctx context.Context, in *GetKeywordByIdRe
 	return out, nil
 }
 
-func (c *keywordServiceClient) GetStream(ctx context.Context, in *GetKeywordStreamRequest, opts ...grpc.CallOption) (KeywordService_GetStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &KeywordService_ServiceDesc.Streams[0], "/keyword.KeywordService/GetStream", opts...)
+func (c *keywordServiceClient) GetListByChannel(ctx context.Context, in *KeywordIdRequest, opts ...grpc.CallOption) (*KeywordList, error) {
+	out := new(KeywordList)
+	err := c.cc.Invoke(ctx, "/keyword.KeywordService/GetListByChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &keywordServiceGetStreamClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type KeywordService_GetStreamClient interface {
-	Recv() (*KeywordResponse, error)
-	grpc.ClientStream
-}
-
-type keywordServiceGetStreamClient struct {
-	grpc.ClientStream
-}
-
-func (x *keywordServiceGetStreamClient) Recv() (*KeywordResponse, error) {
-	m := new(KeywordResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // KeywordServiceServer is the server API for KeywordService service.
 // All implementations must embed UnimplementedKeywordServiceServer
 // for forward compatibility
 type KeywordServiceServer interface {
-	Create(context.Context, *Keyword) (*KeywordResponse, error)
-	CreateByKeyword(context.Context, *CreateByKeywordRequest) (*KeywordResponse, error)
-	Update(context.Context, *Keyword) (*KeywordResponse, error)
+	// Create
+	Create(context.Context, *Keyword) (*Keyword, error)
+	// Update
+	Update(context.Context, *Keyword) (*Keyword, error)
 	// Get
-	GetById(context.Context, *GetKeywordByIdRequest) (*KeywordResponse, error)
-	GetStream(*GetKeywordStreamRequest, KeywordService_GetStreamServer) error
+	GetById(context.Context, *KeywordIdRequest) (*Keyword, error)
+	GetListByChannel(context.Context, *KeywordIdRequest) (*KeywordList, error)
 	mustEmbedUnimplementedKeywordServiceServer()
 }
 
@@ -123,20 +93,17 @@ type KeywordServiceServer interface {
 type UnimplementedKeywordServiceServer struct {
 }
 
-func (UnimplementedKeywordServiceServer) Create(context.Context, *Keyword) (*KeywordResponse, error) {
+func (UnimplementedKeywordServiceServer) Create(context.Context, *Keyword) (*Keyword, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedKeywordServiceServer) CreateByKeyword(context.Context, *CreateByKeywordRequest) (*KeywordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateByKeyword not implemented")
-}
-func (UnimplementedKeywordServiceServer) Update(context.Context, *Keyword) (*KeywordResponse, error) {
+func (UnimplementedKeywordServiceServer) Update(context.Context, *Keyword) (*Keyword, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedKeywordServiceServer) GetById(context.Context, *GetKeywordByIdRequest) (*KeywordResponse, error) {
+func (UnimplementedKeywordServiceServer) GetById(context.Context, *KeywordIdRequest) (*Keyword, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedKeywordServiceServer) GetStream(*GetKeywordStreamRequest, KeywordService_GetStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetStream not implemented")
+func (UnimplementedKeywordServiceServer) GetListByChannel(context.Context, *KeywordIdRequest) (*KeywordList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListByChannel not implemented")
 }
 func (UnimplementedKeywordServiceServer) mustEmbedUnimplementedKeywordServiceServer() {}
 
@@ -169,24 +136,6 @@ func _KeywordService_Create_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _KeywordService_CreateByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateByKeywordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KeywordServiceServer).CreateByKeyword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/keyword.KeywordService/CreateByKeyword",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeywordServiceServer).CreateByKeyword(ctx, req.(*CreateByKeywordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _KeywordService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Keyword)
 	if err := dec(in); err != nil {
@@ -206,7 +155,7 @@ func _KeywordService_Update_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _KeywordService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetKeywordByIdRequest)
+	in := new(KeywordIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -218,30 +167,27 @@ func _KeywordService_GetById_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/keyword.KeywordService/GetById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeywordServiceServer).GetById(ctx, req.(*GetKeywordByIdRequest))
+		return srv.(KeywordServiceServer).GetById(ctx, req.(*KeywordIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _KeywordService_GetStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetKeywordStreamRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _KeywordService_GetListByChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(KeywordIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(KeywordServiceServer).GetStream(m, &keywordServiceGetStreamServer{stream})
-}
-
-type KeywordService_GetStreamServer interface {
-	Send(*KeywordResponse) error
-	grpc.ServerStream
-}
-
-type keywordServiceGetStreamServer struct {
-	grpc.ServerStream
-}
-
-func (x *keywordServiceGetStreamServer) Send(m *KeywordResponse) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(KeywordServiceServer).GetListByChannel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/keyword.KeywordService/GetListByChannel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KeywordServiceServer).GetListByChannel(ctx, req.(*KeywordIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // KeywordService_ServiceDesc is the grpc.ServiceDesc for KeywordService service.
@@ -256,10 +202,6 @@ var KeywordService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _KeywordService_Create_Handler,
 		},
 		{
-			MethodName: "CreateByKeyword",
-			Handler:    _KeywordService_CreateByKeyword_Handler,
-		},
-		{
 			MethodName: "Update",
 			Handler:    _KeywordService_Update_Handler,
 		},
@@ -267,13 +209,11 @@ var KeywordService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetById",
 			Handler:    _KeywordService_GetById_Handler,
 		},
-	},
-	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "GetStream",
-			Handler:       _KeywordService_GetStream_Handler,
-			ServerStreams: true,
+			MethodName: "GetListByChannel",
+			Handler:    _KeywordService_GetListByChannel_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "keyword.proto",
 }

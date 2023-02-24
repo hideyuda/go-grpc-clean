@@ -26,13 +26,20 @@ run:
 	air -c .conf/.air.toml
 
 up:
-	docker-compose -f docker-compose.yml up --build -d
+	docker-compose -f docker-compose.yml up --build -d --log-opt max-size=100m --log-opt max-file=10 my-docker-image
 
 down:
 	docker-compose -f docker-compose.yml down --volumes
 
-enc-envfile:
-	cat .env | base64
+
+# encode envfile
+encode-envfile:
+	cat .env | base64 > env.pem
+
+# decode envfile
+# cat env.pem | base64 -d | xargs -I{} echo {} > .env
+decode-envfile:
+	cat env.pem | base64 -d > .env
 
 migrate-new:
 	sql-migrate new -env=local -config=.conf/dbconfig.yml ${FILE}

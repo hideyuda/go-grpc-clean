@@ -6,14 +6,15 @@ import (
 
 	"github.com/hidenari-yuda/go-grpc-clean/domain/config"
 	"github.com/hidenari-yuda/go-grpc-clean/domain/entity"
+	"github.com/labstack/echo/v4"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 )
 
-// func GetFirebaseToken(c echo.Context) string {
-// 	token := c.Request().Header.Get("FirebaseAuthorization")
-// 	return token
-// }
+func GetFirebaseToken(c echo.Context) string {
+	token := c.Request().Header.Get("FirebaseAuthorization")
+	return token
+}
 
 // func bindAndValidate(c echo.Context, obj interface{}) (err error) {
 // 	err = c.Bind(obj)
